@@ -1,0 +1,33 @@
+#YANG BELUM SELESAI
+	#MODULE
+		- Role -> Paggination
+		- Menu -> View Join Table
+			   -> Crud
+	
+
+#PLUGPATH	
+
+
+#Rencana
+	#User Operator Terbagi menjadi beberapa Departemen
+		#DPI
+		#MPD
+		#MTP
+		#MEI
+		#MMN
+	Dari beberapa Departemen tersebut Jadwal yang di tampilkan berdasarka departemen
+	dan juga jadwal yang akan di inputkan otomatis masuk ke departemen akun yang sedang login
+	Selanjutnya menu yang di tampilkan hanya menu yang berkaitan dengan menu departement
+
+	#User Pengumuman / Informasi 
+	Informasi bisa di tambahkan dan akan di tampilkan di bilah kanan frontend
+	Jika tidak ada jadwal yang ditampilkan maka akan menampilkan Sebuah informasi 
+
+	#Fronend Default
+	Frontend default ada ketika jadwal dan informasi tidak ada maka akan menampilkan frontend default yang tampilan nya bisa di setting
+	Rencan : Paralax text ketik 
+	TExt bisa diganti manual - Template 1
+	Template 2 - Paralax Ucapan selamat datang dan bisa menambahkan sebuah logo
+	Untuk visiting profesor atau keperluan tertentu
+
+	

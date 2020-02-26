@@ -1,0 +1,5 @@
+[16-Aug-2019 06:23:46 UTC] PHP Fatal error:  Class 'SI_Frontend' not found in /home/ppsuikaa/public_html/jadwal/new_jadwal/dev/app/controllers/Main.php on line 3
+[16-Aug-2019 06:25:56 UTC] PHP Fatal error:  Class 'SI_Frontend' not found in /home/ppsuikaa/public_html/jadwal/new_jadwal/dev/app/controllers/Main.php on line 3
+[16-Aug-2019 06:27:37 UTC] PHP Fatal error:  Class 'SI_Frontend' not found in /home/ppsuikaa/public_html/jadwal/new_jadwal/dev/app/controllers/Main.php on line 3
+[16-Aug-2019 06:30:25 UTC] PHP Parse error:  syntax error, unexpected 'foreach' (T_FOREACH), expecting identifier (T_STRING) in /home/ppsuikaa/public_html/jadwal/new_jadwal/dev/app/libraries/Access_management.php on line 57
+[16-Aug-2019 06:33:31 UTC] PHP Fatal error:  Cannot redeclare class MX_Loader in /home/ppsuikaa/public_html/jadwal/new_jadwal/dev/app/third_party/MX/Loader.php on line 0
