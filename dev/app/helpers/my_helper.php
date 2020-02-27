@@ -38,6 +38,17 @@ function get_name_dosen($id)
     }
 }
 
+function get_count($table, $value, $where)
+{
+  $ci =& get_instance();
+  $ci->db->where($where);
+  $data = $ci->db->get($table)->result();
+  foreach ($data as $row) {
+    return $row->$value;
+  }
+  
+}
+
 
 function hari_ini($hari)
 

@@ -33,6 +33,7 @@ class Jadwal extends SI_Backend {
     	'tanggal' => set_value('tanggal'),
 
     	'jml_mahasiswa' => set_value('jml_mahasiswa'),
+    	'sesi_kuliah' => set_value('sesi_kuliah'),
 
     	);
 		$this->site->load('jadwal/list_jadwal', $data);
@@ -57,6 +58,7 @@ class Jadwal extends SI_Backend {
 				$row[] = $r->nama_matkul;
 				$row[] = $r->nama_dosen;
 				$row[] = $r->nama_ruangan;
+				$row[] = $r->sesi_kuliah;
 				$row[] = $r->tanggal;
 				//add html for action
 				$row[] = '
@@ -104,6 +106,7 @@ class Jadwal extends SI_Backend {
     	'tanggal' => set_value('tanggal'),
 
     	'jml_mahasiswa' => set_value('jml_mahasiswa'),
+    	'sesi_kuliah' => set_value('sesi_kuliah'),
 
     	);
 		$this->site->load('jadwal/form_jadwal', $data);
@@ -144,6 +147,7 @@ class Jadwal extends SI_Backend {
 		        'kode_ruangan' => $this->input->post('nama_ruangan'),
 		        'jml_mahasiswa' => $this->input->post('jml_mahasiswa'),
 		        'group_id' => $this->session->userdata('group'),
+		        'sesi_kuliah' => $this->input->post('sesi_kuliah'),
 		       ];
 
 		       
@@ -197,11 +201,12 @@ class Jadwal extends SI_Backend {
 		        'kode_ruangan' => $this->input->post('nama_ruangan'),
 		        'jml_mahasiswa' => $this->input->post('jml_mahasiswa'),
 		        'group_id' => $this->session->userdata('group'),
+		        'sesi_kuliah' => $this->input->post('sesi_kuliah'),
 		       ];
 
 			$save_data = $this->_db->insert($data);
 			if ($save_data) {
-				$this->db->set(['id_jadwal' => $save_data, 'id_group' => $this->session->userdata('group')]);
+				$this->db->set(['id_jadwal' => $save_data, 'id_group' => $this->session->userdata('group'), 'id_dosen' => $this->input->post('nama_dosen'), 'tanggal' => $this->input->post('tanggal'), 'sesi_kuliah' => $this->input->post('sesi_kuliah')]);
 				$this->db->insert('ci_kehadiran_dosen');
 				if ($this->input->post('save_type') == 'stay') {
 					$response['success'] = true;

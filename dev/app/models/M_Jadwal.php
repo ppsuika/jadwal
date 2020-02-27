@@ -6,10 +6,10 @@ class M_Jadwal extends SI_Model {
 	protected $primary_key = 'id';
 
 	public $id = 'id';
-	var $column_order = array(null, 'nama_prodi','nama_matkul', 'nama_dosen','nama_ruangan','tanggal', null);
+	var $column_order = array(null, 'nama_prodi','nama_matkul', 'nama_dosen','nama_ruangan','sesi_kuliah','tanggal', null);
 	var $column_search = array('ci_prodi.nama_prodi','ci_matkul.nama_matkul', 'ci_dosen.nama_dosen', 'ci_jadwal.tanggal'); 
 	var $order = array('id' => 'desc'); // default order 
-	var $select = array('ci_jadwal.id','ci_prodi.nama_prodi','ci_jadwal.semester','ci_matkul.nama_matkul','ci_dosen.nama_dosen','ci_jadwal.dosen_pengganti','ci_ruangan.nama_ruangan','ci_ruangan.gedung','ci_jadwal.jml_mahasiswa','ci_jadwal.jam_mulai','ci_jadwal.jam_berakhir','ci_jadwal.tanggal','si_group.group', 'ci_jadwal.group_id');
+	var $select = array('ci_jadwal.id','ci_prodi.nama_prodi','ci_jadwal.semester','ci_matkul.nama_matkul','ci_dosen.nama_dosen','ci_jadwal.dosen_pengganti','ci_ruangan.nama_ruangan','ci_ruangan.gedung','ci_jadwal.jml_mahasiswa','ci_jadwal.jam_mulai','ci_jadwal.jam_berakhir','ci_jadwal.tanggal','si_group.group', 'ci_jadwal.group_id', 'ci_jadwal.sesi_kuliah');
 	var $join = array(
 		'ci_prodi' => 'ci_prodi.id = ci_jadwal.nama_prodi',
 		'ci_matkul' => 'ci_matkul.id = ci_jadwal.nama_matkul',

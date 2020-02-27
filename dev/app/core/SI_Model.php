@@ -57,11 +57,15 @@ class SI_Model extends CI_Model {
 		}
 	}
 
-	public function update($data, $where = array())
+	public function update($data, $where = array(), $table = null)
 	{
 		$this->db->set($data);
 		$this->db->where($where);
+		if ($table != null)
+			return $this->db->update($table);
 		return $this->db->update($this->table_name);
+			
+
 	}
 
 	public function get($id=NUll, $single=FALSE)
@@ -84,6 +88,12 @@ class SI_Model extends CI_Model {
 		}
 
 		return $this->db->get($this->table_name)->$method();
+	}
+
+	public function result_array()
+	{
+		return $this->db->get($this->table_name)->result_array();
+		
 	}
 
 	public function get_by($where = NUll, $limit = NUll, $offset = NUll, $single = FALSE, $select = NUll)
@@ -252,6 +262,35 @@ class SI_Model extends CI_Model {
 		$query = $this->db->get();
 		return $this->db->count_all_results();
 	}
+
+	/**
+     * Seleksi data perkolom
+     * Chain Method
+     * 
+     * @param [type] $columns
+     * @return void    
+     */
+
+    public function select($columns)
+    {
+        $this->db->select($columns);
+        return $this;
+    }
+
+
+    /**
+     * MEnghubungkan Table yang berelasi dengan tabel yg memiliki foreign key id_namatable
+     * Chain Method
+     * 
+     * @param [type] $table
+     * @param [type] $type
+     * @return void
+     */
+    public function join($table, $fild_main, $type = 'left')
+    {
+        $this->db->join($table, "$this->table_name.$fild_main = $table.id", $type);
+        return $this;
+    }
 
 }
 

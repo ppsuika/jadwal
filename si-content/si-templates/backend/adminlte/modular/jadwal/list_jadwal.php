@@ -59,6 +59,7 @@
                            <th width="120px">Matakuliah</th>
                            <th width="130px">Dosen</th>
                            <th width="100px">Ruangan</th>
+                           <th>Sesi Kuliah</th>
                            <th>Tanggal</th>
                            <th>Action</th>
                         </tr>
@@ -292,6 +293,24 @@
                         </div>
 
                     </div>
+
+                    <div class="form-group ">
+
+                        <label for="text" class="col-sm-2 control-label">Sesi Kuliah <i class="required"></i></label>
+
+
+
+                        <div class="col-sm-8">
+
+                          <input type="number" class="form-control" name="sesi_kuliah" id="sesi_kuliah" placeholder="Sesi Kuliah" value="<?= $sesi_kuliah; ?>">
+
+                          <small class="info help-block">
+                            1 atau 2 ... ?
+                          </small>
+
+                        </div>
+
+                    </div>
                     
                     
 
@@ -492,6 +511,7 @@ $(document).ready(function(){
                 $('[name=jam_berakhir]').val(res.message.jam_berakhir);
                 $('[name=tanggal]').val(res.message.tanggal);
                 $('[name=jml_mahasiswa]').val(res.message.jml_mahasiswa);
+                $('[name=sesi_kuliah]').val(res.message.sesi_kuliah);
 
 
 

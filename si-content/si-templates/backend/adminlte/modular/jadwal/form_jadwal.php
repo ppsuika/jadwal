@@ -239,6 +239,24 @@
                         </div>
                     </div>
 
+                    <div class="form-group ">
+
+                        <label for="text" class="col-sm-2 control-label">Sesi Kuliah <i class="required"></i></label>
+
+
+
+                        <div class="col-sm-8">
+
+                          <input type="number" class="form-control" name="sesi_kuliah" id="sesi_kuliah" placeholder="Sesi Kuliah" value="<?= $sesi_kuliah; ?>">
+
+                          <small class="info help-block">
+                            1 atau 2 ... ?
+                          </small>
+
+                        </div>
+
+                    </div>
+
                     
                     <div class="message">
                       

@@ -41,7 +41,7 @@
                   
                   
                   <div > 
-                    <?= form_open('', [
+                    <?= form_open(base_url('admin/rekap/get'), [
                         'name'    => 'form_user', 
                         'class'   => 'form-horizontal', 
                         'id'      => 'form', 
@@ -103,7 +103,7 @@
                     </div>
 
                     <div class="row-fluid col-md-7 ">
-                        <button class="btn btn-flat btn-info btn_get_data btn_action" id="btn_save" data-stype='stay' title="save (Ctrl+s)"><i class="fa fa-save" ></i> Rekap </button>
+                        <button type="submit" class="btn btn-flat btn-info btn_get_data btn_action" id="btn_save" data-stype='stay' title="save (Ctrl+s)"><i class="fa fa-save" ></i> Rekap </button>
                         <a class="btn btn-flat btn-default btn_action" id="btn_cancel" title="cancel (Ctrl+x)"><i class="fa fa-undo" ></i> Cancel</a>
                         <span class="loading loading-hide"><img src="<?= BASE_ASSET ?>include/img/loading-spin-primary.svg"> <i>Loading, Saving data</i></span>
                      </div>
@@ -136,6 +136,9 @@
            <th>Action</th>
         </tr>
      </thead>
+     <tbody id="tbody_content">
+       
+     </tbody>
     </table>
   </div>
 </section>
@@ -168,49 +171,50 @@ $(document).ready(function(){
 
     
 
-    $('.btn_get_data').click(function(e){
-      e.preventDefault(); 
+    // $('.btn_get_data').click(function(e){
+    //   e.preventDefault(); 
 
-          var url = '<?= base_url('admin/rekap/get'); ?>';
-          var save_type = 'back';
-        var form = $('#form')[0];
+    //       var url = '<?= base_url('admin/rekap/get'); ?>';
+    //       var save_type = 'back';
+    //       var form = $('#form')[0];
 
-           $.ajax({
-               url: url,
-               type:"post",
-               dataType: 'json',
-               data:new FormData(form),
-               processData:false,
-               contentType:false,
-               cache:false,
-               async:false,
-           })
+    //        $.ajax({
+    //            url: url,
+    //            type:"post",
+    //            dataType: 'json',
+    //            data:new FormData(form),
+    //            processData:false,
+    //            contentType:false,
+    //            cache:false,
+    //            async:false,
+    //        })
 
-            .done(function(res){
-                table = $('.dataTable').DataTable({ 
-                  "processing": true, //Feature control the processing indicator.
-                  "serverSide": true, //Feature control DataTables' server-side processing mode.
-                  "order": [], //Initial no order.
-                  // Load data for the table's content from an Ajax source
-                  "ajax": {
-                      "url": "<?php echo site_url('admin/jadwal/ajax')?>",
-                      "type": "POST",
+    //         .done(function(data){
+    //             $('.table').show();  
+    //             // $(res).each(res, function(key, r){
+    //             //     // $("table #tbody_content").append($("<tr>"))
+    //             //     // .append($("<td>")).append(r.nama_prodi)
+    //             //     // .append($("<td>")).append(r.nama_matkul)
+    //             //     // .append($("<td>")).append(r.nama_dosen)
+    //             //     // .append($("<td>")).append(r.nama_ruangan)
+    //             //     // .append($("<td>")).append(r.tanggal)
+    //             //       console.log(r)
 
-                  },
-                  //Set column definition initialisation properties.
-                  "columnDefs": [
-                      { 
-                          "targets": [ -1, 0 ], //last column
-                          "orderable": false, //set not orderable
-                      }
-                  ],
 
-              });
+    //             // });
 
-              
+    //             $.each(data, function(i, items) {
+    //                $.each(data, function(items, item) {
+    //                 console.log(item.nama_prodi);
+    //               });
+    //             });
                  
-            }) 
-    });  
+    //         }) 
+    // }); 
+
+    // function reset() {
+       
+    // } 
 
 
      //for delete
@@ -303,30 +307,30 @@ $(document).ready(function(){
     });
 
 
-    $('#rekap_btn').click(function(event) {
-      /* Act on the event */
-      var form_rekap = $('#form_rekap');
-      var data_post = form_rekap.serializeArray();
-      var save_type = $(this).attr('data-stype');
+    // $('#rekap_btn').click(function(event) {
+    //   /* Act on the event */
+    //   var form_rekap = $('#form_rekap');
+    //   var data_post = form_rekap.serializeArray();
+    //   var save_type = $(this).attr('data-stype');
 
-      $.ajax({
-        url: BASE_URL + 'admin/jadwal/rekap_mengajar',
-        type: 'POST',
-        dataType: 'JSON',
-        data: data_post,
-      })
-      .done(function(res) {
-        console.log(res.message);
-      })
-      .fail(function() {
-        console.log("error");
-      })
-      .always(function() {
-        console.log("complete");
-      });
+    //   $.ajax({
+    //     url: BASE_URL + 'admin/jadwal/rekap_mengajar',
+    //     type: 'POST',
+    //     dataType: 'JSON',
+    //     data: data_post,
+    //   })
+    //   .done(function(res) {
+    //     console.log(res.message);
+    //   })
+    //   .fail(function() {
+    //     console.log("error");
+    //   })
+    //   .always(function() {
+    //     console.log("complete");
+    //   });
       
 
-    });
+    // });
      
 
     

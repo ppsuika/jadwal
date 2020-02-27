@@ -45,19 +45,55 @@ class Rekap extends SI_Backend {
 		$range = date('Y-m-d', strtotime($this->input->post('range')));
 
 		if ($tanggal <= $range) {	
-				$response = $this->_db
+				$response['data'] = $this->_db
+				->select('ci_jadwal.id,ci_prodi.nama_prodi,ci_jadwal.semester,ci_matkul.nama_matkul,ci_dosen.nama_dosen,ci_jadwal.dosen_pengganti,ci_ruangan.nama_ruangan,ci_ruangan.gedung,ci_jadwal.jml_mahasiswa,ci_jadwal.jam_mulai,ci_jadwal.jam_berakhir,ci_jadwal.tanggal')
+				->join('ci_prodi', 'nama_prodi', 'left')
+				->join('ci_matkul', 'nama_matkul', 'left')
+				->join('ci_dosen', 'nama_dosen', 'left')
+				->join('ci_ruangan', 'kode_ruangan', 'left')
 				->wheres('ci_jadwal.nama_dosen', $this->input->post('nama_dosen'))
 				->wheres('ci_jadwal.tanggal >=', $this->input->post('tanggal'))
 				->wheres('ci_jadwal.tanggal <=', $this->input->post('range'))
-				->getRequestAjax();
+				->get();
+
+		$this->load->library("Excel");
+		$object = new PHPExcel();
+		 $object->setActiveSheetIndex(0);
+
+		  $table_columns = array("Program Studi", "Matakuliah", "Dosen", "Ruangan", "Tanggal");
+
+		  $column = 0;
+
+		  foreach($table_columns as $field)
+		  {
+		   $object->getActiveSheet()->setCellValueByColumnAndRow($column, 1, $field);
+		   $column++;
+		  }
 
 
+		  $excel_row = 2;
+
+		  foreach($response['data'] as $row)
+		  {
+		   $object->getActiveSheet()->setCellValueByColumnAndRow(0, $excel_row, $row->nama_prodi);
+		   $object->getActiveSheet()->setCellValueByColumnAndRow(1, $excel_row, $row->nama_matkul);
+		   $object->getActiveSheet()->setCellValueByColumnAndRow(2, $excel_row, $row->nama_dosen);
+		   $object->getActiveSheet()->setCellValueByColumnAndRow(3, $excel_row, $row->nama_ruangan);
+		   $object->getActiveSheet()->setCellValueByColumnAndRow(4, $excel_row, $row->tanggal);
+		   $excel_row++;
+		  }
+
+		  $object_writer = PHPExcel_IOFactory::createWriter($object, 'Excel5');
+		  header('Content-Type: application/vnd.ms-excel');
+		  header('Content-Disposition: attachment;filename="Rekap.xls"');
+		  echo $object_writer->save('php://output');
 
 
 		} else {
-			$response = $tanggal. "lebih besar dari". $range;
+			$response['errors'] = $tanggal. "lebih besar dari". $range;
+			return $this->response($response);
+
 		}
-		$this->response($response);
 	}
 
 	public function ajax()

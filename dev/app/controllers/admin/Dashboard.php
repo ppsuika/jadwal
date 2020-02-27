@@ -23,8 +23,11 @@ class Dashboard extends SI_Backend {
 			'jadwal' => $jadwal,
 			'agenda' => $agenda,
 			'jadwal_prodi' => $jadwal_prodi,
-			'agenda_prodi'	=> $agenda_prodi
+			'agenda_prodi'	=> $agenda_prodi,
+			
 		];
+
+		
 		$this->site->load('dashboard', $data);
 	}
 
@@ -33,29 +36,30 @@ class Dashboard extends SI_Backend {
 	{
 		$id = $this->input->post('id', TRUE);
 		$sesi = $this->input->post('sesi', TRUE);
-		$this->db->where(['id' => $id]);
-		$data_jadwal = $this->db->get('ci_jadwal')->row();
-		$data_update = [
-			'tanggal' => $data_jadwal->tanggal,
-			'id_dosen' => $data_jadwal->nama_dosen
-		];
-		
-		if (is_array($sesi)) {
-			$data_update['sesi_kuliah'] = json_encode($sesi);
-			$data_update['jumlah'] = count($sesi);
-		} else {
-			$data_update['sesi_kuliah'] = $sesi;
-		}
 		$this->db->where(['id_jadwal' => $id]);
-		$this->db->set($data_update);
-		$this->db->update('ci_kehadiran_dosen');
-		$response['message'] = $sesi;
+		$data_jadwal = $this->db->get('ci_kehadiran_dosen')->row();
+		$sesi_old = $data_jadwal->jumlah_sesi;
+	
+			$update = ['jumlah_sesi' => count($sesi)];
+		
+		
+		$update_save = $this->_db->update($update, ['id_jadwal' => $id], 'ci_kehadiran_dosen');
+		if ($update_save) {
+			$response['success'] = true; 
+			$response['message'] = "berhasil mengupdate data"; 
+		} else {
+			$response['success'] = false; 
+			$response['message'] = "gagal mengupdate data"; 
+		}
 		$this->response($response);
 	}
 
-	public function menu()
+	public function sesis_kehadiran()
 	{
-		
+		$response['sesi_kuliah'] = get_count('ci_jadwal', 'sesi_kuliah', ['id' => $this->input->post('id')]);
+		$this->db->where(['id_jadwal' => $this->input->post('id')]);
+		$response['sisi_aktif'] = $this->db->get('ci_kehadiran_dosen')->row()->jumlah_sesi;
+		return $this->response($response);
 	}
 
 	

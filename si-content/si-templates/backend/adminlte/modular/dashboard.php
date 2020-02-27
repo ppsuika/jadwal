@@ -78,7 +78,9 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <?php $no = 1; foreach ($jadwal_prodi as $row): ?>
+                    <?php
+
+                     $no = 1; foreach ($jadwal_prodi as $row): ?>
                       <tr>
                         <td><?= $no; ?></td>
                         <td><?= $row->nama_matkul; ?></td>
@@ -89,6 +91,7 @@
                         <td><?= $row->jam_mulai.' - '.$row->jam_berakhir; ?></td>
                         <td>
                           <button class="btn btn-flat btn-primary btn_kehadiran" id="" data-id = "<?= $row->id ?>">Edit Kehadiran</button>
+                          <span class="required closed">*Closed</span>
                         </td>  
                       
                        
@@ -270,6 +273,7 @@
     });
   });
 
+   
   // $(document).ready(function() {
   //   //set initial state.
   //     $('.minimal-red').val(this.checked);
@@ -295,7 +299,28 @@
 
     $('.btn_kehadiran').click(function() {
       var id = $(this).attr('data-id');
+      $("#sesi_kuliah").empty();
       $('#modal_form').modal('show');
+      $.ajax({
+        url: '<?= base_url('admin/dashboard/sesis_kehadiran'); ?>',
+        type: 'POST',
+        dataType: 'JSON',
+        data: {id: id},
+      })
+      .done(function(res) {
+        var i = 1;
+        for (i = 1; i <= res.sesi_kuliah; i++) {
+          $('#sesi_kuliah').append('<label class="checkbox-inline"><input type="checkbox" value="1" name="sesi[]" class="switch-button" >Sesi '+i+'</label>')
+        }
+        
+      })
+      .fail(function() {
+        console.log("error");
+      })
+      .always(function() {
+        console.log("complete");
+      });
+      
       $('[name=form_kehadiran_id]').val(id);
     });  
 
@@ -326,17 +351,16 @@
                 data: data_post,
             })
             .done(function(res) {
-                console.log(res.message);
-
-               
-
+                toastr['success'](res.message);
+                $('.btn_kehadiran').hide();   
+                $('.closed').show();
             })
             .fail(function() {
                 toastr['error']('Error update status');
             });
     });
 
-
+    
  
 </script>
 
@@ -360,26 +384,16 @@
                   <input type="hidden" name="form_kehadiran_id">
                   <div class="form-group ">
                         <label for="label" class="col-sm-2 control-label">Sesi Kuliah </label>
-                        <div class="col-sm-8">
-                          <label class="checkbox-inline"><input type="checkbox" value="sesi1" name="sesi[]" class="switch-button">Sesi 1</label>
-                          <label class="checkbox-inline"><input type="checkbox" value="sesi2" name="sesi[]" class="switch-button">Sesi 2</label>
-                          <label class="checkbox-inline"><input type="checkbox" value="sesi3" name="sesi[]" class="switch-button">Sesi 3</label>
-                          <i class="required"><small></small></i>
+                        <div class="col-sm-8" id="sesi_kuliah">
+                      
+                        
                         </div>
                     </div>
-
-                  <div class="form-group ">
-                        <label for="label" class="col-sm-2 control-label">Tanggal Hari ini</label>
-
-                        <div class="col-sm-8">
-                          <input type="text" name="tanggal" value="" readonly="readonly"> 
-                        </div>
-                    </div>  
                 <?= form_close(); ?>
                   
                   
             </div>
-            <div class="modal-footer">
+           <!--  <div class="modal-footer">
 
                 <div class="message">
 
@@ -388,7 +402,7 @@
                 <button type="submit" class="btn btn-flat btn-primary btn_save btn_action" id="simpan" data-stype='stay' title="save (Ctrl+s)"><i class="fa fa-save" ></i> Save</button>
                 <button type="submit" class="btn btn-flat btn-info btn_save btn_action btn_save_back" id="simpan" data-stype='back' title="save and back to the list (Ctrl+d)"><i class="ion ion-ios-list-outline" ></i> Save and Go to The List</button>
                 <button type="button" data-dismiss="modal" class="btn btn-flat btn-default btn_action" id="btn_cancel" title="cancel (Ctrl+x)"><i class="fa fa-undo" ></i> Cancel</button>
-            </div>
+            </div> -->
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
