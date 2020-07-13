@@ -50,7 +50,6 @@
                            <th>Kode Ruangan</th>
                            <th>Ruangan</th>
                            <th>Gedung</th>
-                           <th>Alpa</th>
                            <th>Action</th>
                         </tr>
                      </thead>

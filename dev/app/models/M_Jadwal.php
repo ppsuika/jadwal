@@ -46,6 +46,17 @@ class M_Jadwal extends SI_Model {
         return $query->result();  
 	}
 
+	public function sesi_kehadiran($where = null)
+	{
+		$this->db->select('ci_kehadiran_dosen.id_jadwal, ci_dosen.nama_dosen, ci_kehadiran_dosen.tanggal, ci_kehadiran_dosen.sesi_kuliah, ci_kehadiran_dosen.jumlah_sesi, si_group.group');
+        $this->db->from('ci_kehadiran_dosen');
+        $this->db->join('ci_dosen', 'ci_dosen.id = ci_kehadiran_dosen.id_dosen', 'left');
+        $this->db->join('si_group', 'si_group.group_id = ci_kehadiran_dosen.id_group', 'left');
+        $this->db->where($where);
+        $query = $this->db->get();  
+        return $query->row();
+	}
+
 	public function get_range($data)
 	{
 		$condition = "nama_dosen = ".$data['nama_dosen']." AND tanggal BETWEEN " . "'" . $data['date1'] . "'" . " AND " . "'" . $data['date2'] . "'";

@@ -2,6 +2,8 @@
 
 class SI_Backend extends SI_Controller {
 
+	protected $view_table ='';
+
 	public function __construct()
 	{
 		parent::__construct();
@@ -16,7 +18,7 @@ class SI_Backend extends SI_Controller {
 		$this->site->modul = 'modular';
 		$this->site->is_loggedin();
 		$this->load->model('M_menu', 'menu');
-
+		$this->view_table = $this->site->side.'/'.$this->site->template.'/'.$this->site->modul;
 		$config = [
 			'data_menu' => $this->menu->getMenu_role('', 1),
 		];

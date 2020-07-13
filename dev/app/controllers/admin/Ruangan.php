@@ -28,14 +28,13 @@ class Ruangan extends SI_Backend {
 				$row[] = $r->kode_ruangan;
 				$row[] = $r->nama_ruangan;
 				$row[] = $r->gedung;
-				$row[] = $r->alpa;
 				//add html for action
 				$row[] = '
 				<div class="text-center"><button type="button" class="btn btn-sm btn-warning edit" title="Edit" id="edit" data-id = "'.$r->id.'"><i class="fa fa-pencil"></i>Edit </button>
 				<button type="button" class="btn btn-sm btn-danger delete" title="Delete" id="delete" data-id = "'.$r->id.'"><i class="fa fa-trash"></i>Delete</button></div>
 				
 
-				<button type="button" class="btn btn-sm btn-primary alpa" title="Delete" id="alpa" data-id = "'.$r->id.'"><i class="fa fa-trash"></i>Alpa</button></div>
+				
 				';
 				$data[] = $row;
 			}

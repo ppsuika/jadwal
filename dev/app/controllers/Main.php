@@ -16,7 +16,7 @@ class Main extends SI_Frontend {
 		$jadwal = $this->db_jadwal->get_jadwal(['tanggal' => date('Y-m-d')]);
 		$this->db->order_by('ci_agenda.tanggal', 'ASC');
 		$this->db->order_by('ci_agenda.jam_mulai', 'ASC');
-		$agenda = $this->db_agenda->now_agenda("(ci_agenda.tanggal >= now() + 1)");
+		$agenda = $this->db_agenda->now_agenda("(ci_agenda.tanggal >= now() - INTERVAL 1 DAY)");
 		$data = [
 			'title' => 'Dashboard',
 			'jadwal' => $jadwal,
@@ -76,6 +76,12 @@ class Main extends SI_Frontend {
 			return $this->response($json_data);
 		}
 			
+	}
+
+	public function agenda()
+	{
+		$agenda = $this->db_agenda->now_agenda("(ci_agenda.tanggal >= now() - INTERVAL 1 DAY)");
+		print_r($agenda);
 	}
 
 }

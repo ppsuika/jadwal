@@ -24,7 +24,7 @@
                   <div class="widget-user-header ">
                      <div class="row pull-right">
                         
-                        <button class="btn btn-flat btn-success btn_add_new" id="btn_rekap" ><i class="fa fa-cloud-download" ></i> Rekap Mengajar</button>
+                        <!-- <button class="btn btn-flat btn-success btn_add_new" id="btn_rekap" ><i class="fa fa-cloud-download" ></i> Rekap Mengajar</button> -->
 
                         <a href="<?= base_url('admin/jadwal/add') ?>" class="btn btn-flat btn-success btn_add_new" id="add_dosen" ><i class="fa fa-plus-square-o" ></i> Tambah Jadwal</a >
                         
@@ -59,7 +59,7 @@
                            <th width="120px">Matakuliah</th>
                            <th width="130px">Dosen</th>
                            <th width="100px">Ruangan</th>
-                           <th>Sesi Kuliah</th>
+                           <th>Jml Wajib sesi Kuliah</th>
                            <th>Tanggal</th>
                            <th>Action</th>
                         </tr>

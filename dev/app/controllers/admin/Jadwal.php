@@ -152,19 +152,45 @@ class Jadwal extends SI_Backend {
 
 		       
 			$id = $this->input->post('id', TRUE);
+
+			if ($this->cek_kehadiran($id) == true) {
+				$data_save = [
+					'id_jadwal' => $id,
+					'id_dosen'	=> $this->input->post('nama_dosen'),
+					'tanggal'	=> $this->input->post('tanggal'),
+					'sesi_kuliah' => $this->input->post('sesi_kuliah'),
+					'id_group'	=> $this->session->userdata('group')
+				];
+				$this->db->set($data_save);
+				$save = $this->db->insert('ci_kehadiran_dosen');
+			} 
+
 			$save_data = $this->_db->update($data, ['id' => $id]);
 			if ($save_data) {
 					$response['success'] = true;
-					$response['message'] = 'Data Jadwal berhasil di update !';
+					$response['message'] = 'Data Jadwal berhasil di update !' ;
 				
 			} else {
 				$response['success'] = false;
 
 				$response['message'] = 'Gagal mengupdate data Jadwal';
 			}
+
+			
 		 
 
 		return $this->response($response);
+	}
+
+	public function cek_kehadiran($id)
+	{
+		$this->db->where('id_jadwal', $id);
+		$data = $this->db->get('ci_kehadiran_dosen');
+		if ($data->num_rows() > 0) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 
 

@@ -12,7 +12,8 @@
 	},
 	"require": {
 		"php": ">=5.3.7",
-		"froala/wysiwyg-editor-php-sdk" : "1.*"
+		"froala/wysiwyg-editor-php-sdk" : "1.*",
+		"phpoffice/phpspreadsheet": "^1.14"
 	},
 	"suggest": {
 		"paragonie/random_compat": "Provides better randomness in PHP 5.x"

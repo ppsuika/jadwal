@@ -241,7 +241,7 @@
 
                     <div class="form-group ">
 
-                        <label for="text" class="col-sm-2 control-label">Sesi Kuliah <i class="required"></i></label>
+                        <label for="text" class="col-sm-2 control-label">Jml wajib Sesi Kuliah <i class="required"></i></label>
 
 
 

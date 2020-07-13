@@ -50,6 +50,18 @@ function get_count($table, $value, $where)
 }
 
 
+function get_data($table, $where)
+{
+  $ci =& get_instance();
+  $ci->db->where($where);
+  $data = $ci->db->get($table)->result();
+  foreach ($data as $row) {
+    return $row;
+  }
+  
+}
+
+
 function hari_ini($hari)
 
 {

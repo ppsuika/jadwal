@@ -90,8 +90,21 @@
                         <td><?= $row->jml_mahasiswa; ?></td>
                         <td><?= $row->jam_mulai.' - '.$row->jam_berakhir; ?></td>
                         <td>
-                          <button class="btn btn-flat btn-primary btn_kehadiran" id="" data-id = "<?= $row->id ?>">Edit Kehadiran</button>
-                          <span class="required closed">*Closed</span>
+                          <a 
+                            href="#mymodal"
+                            data-remote ="<?= base_url('admin/dashboard/show/'.$row->id) ?>"
+                            data-toggle="modal"
+                            data-target="#mymodal"
+                            data-title ="Edit Kehadiran Dosen <?= $row->nama_dosen ?>" 
+                            class="btn btn-warning btn-sm">
+                                <i class="fa fa-pencil"></i>
+                          </a>
+                          <a href="#mymodal"
+                            data-remote ="<?= base_url('admin/dashboard/detail/'.$row->id) ?>"
+                            data-toggle="modal"
+                            data-title ="Detail Kehadiran Dosen <?= $row->nama_dosen ?>" 
+                            data-target="#mymodal" class="btn btn-info btn-sm"><i class="fa fa-eye"></i> </a>
+                          
                         </td>  
                       
                        
@@ -288,7 +301,7 @@
   //              dataType: 'JSON',
   //              data: data_post,
   //            })
-  //            .done(function(res) {
+  //            .done( (res) {
   //              console.log(res.message);
   //            })
              
@@ -308,10 +321,9 @@
         data: {id: id},
       })
       .done(function(res) {
-        var i = 1;
-        for (i = 1; i <= res.sesi_kuliah; i++) {
-          $('#sesi_kuliah').append('<label class="checkbox-inline"><input type="checkbox" value="1" name="sesi[]" class="switch-button" >Sesi '+i+'</label>')
-        }
+        $.each(function(row, index) {
+          console.log(row.nama_prodi)
+        });
         
       })
       .fail(function() {
@@ -361,48 +373,72 @@
     });
 
     
- 
+ jQuery(document).ready(function(e) {
+
+  $('body').on('hidden.bs.modal', '.modal', function () {
+    $(this).removeData('bs.modal');
+  });
+
+
+    $('#myModal').on('show.bs.modal', function () {
+        var button = $(e.relatedTarget);
+        var modal = $(this);
+        modal.find('.modal-content').load(button.data("remote"));
+        modal.find('.modal-title').tex(button.data("title"));
+        
+    });
+
+    // $('#modalDetail').on('show.bs.modal', function () {
+    //     var button = $(e.relatedTarget);
+    //     var modal = $(this);
+    //     modal.find('.modal-detail').load(button.data("remote"));
+    // });
+
+    $(document).on('change', '#sesi_kuliah', function(e) {
+      e.preventDefault();
+      var data_sesi = $('select#sesi_kuliah').val();
+      var id = $('[name=form_kehadiran_id]').val();
+      var form_blog = $('#form');
+      var data_post = form_blog.serializeArray();
+      data_post.push({
+            name: 'id',
+            value: id
+        });
+      $('.loading').show();
+      $.ajax({
+          url: BASE_URL + '/admin/dashboard/update_kehadiran',
+          type: 'POST',
+          dataType: 'JSON',
+          data: data_post,
+      })
+      .done(function(res) {
+         $('.loading').hide();
+         $('#myModal').modal('hide');
+          toastr['success'](res.message);
+       
+      })
+      .fail(function() {
+          toastr['error']('Error update status');
+      });
+      
+      
+    });
+});
 </script>
 
-<div class="modal fade" id="modal_form" role="dialog" tabindex="-1">
+<div class="modal fade" id="mymodal" role="dialog" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header" style="background-color:#03904e; color:#fff; ">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h3 class="modal-title text-center">Edit Kehadiran</h3>
-            </div>
-            <div class="modal-body form form-horizontal">
-                <?= form_open('', [
-                    'name'    => 'form', 
-                    'class'   => 'form-horizontal', 
-                    'id'      => 'form', 
-                    'enctype' => 'multipart/form-data', 
-                    'method'  => 'POST'
-                  ]); 
+        <i class="fa fa-spinner fa-spin"></i>
+        </div>
+    </div>
+</div>
 
-                  ?>
-                  <input type="hidden" name="form_kehadiran_id">
-                  <div class="form-group ">
-                        <label for="label" class="col-sm-2 control-label">Sesi Kuliah </label>
-                        <div class="col-sm-8" id="sesi_kuliah">
-                      
-                        
-                        </div>
-                    </div>
-                <?= form_close(); ?>
-                  
-                  
-            </div>
-           <!--  <div class="modal-footer">
 
-                <div class="message">
-
-                </div>
-                <span class="loading loading-hide"><img src="<?= base_url('assets'); ?>/img/loading-spin-primary.svg"> <i>Loading, Saving data</i></span>
-                <button type="submit" class="btn btn-flat btn-primary btn_save btn_action" id="simpan" data-stype='stay' title="save (Ctrl+s)"><i class="fa fa-save" ></i> Save</button>
-                <button type="submit" class="btn btn-flat btn-info btn_save btn_action btn_save_back" id="simpan" data-stype='back' title="save and back to the list (Ctrl+d)"><i class="ion ion-ios-list-outline" ></i> Save and Go to The List</button>
-                <button type="button" data-dismiss="modal" class="btn btn-flat btn-default btn_action" id="btn_cancel" title="cancel (Ctrl+x)"><i class="fa fa-undo" ></i> Cancel</button>
-            </div> -->
-        </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
+<!-- <div class="modal fade" id="modalDetail" role="dialog" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content modal-detail">
+        <i class="fa fa-spinner fa-spin"></i>
+        </div>
+    </div>
+</div> -->

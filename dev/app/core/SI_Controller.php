@@ -8,7 +8,7 @@ class SI_Controller extends MX_Controller {
 		parent::__construct();
 
 		$this->load->helper(array('template', 'form','user','MY_helper'));
-		$this->load->library(array('Site', 'form_validation'));
+		$this->load->library(array('Site', 'form_validation', 'parser'));
 		$this->load->model(array());
 
         $this->data['information'] = $this->loadInfo();

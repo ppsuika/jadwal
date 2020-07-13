@@ -18,6 +18,7 @@ class Dashboard extends SI_Backend {
 		$agenda = $this->db_agenda->now_agenda("(ci_agenda.tanggal >= now())");
 		$jadwal = $this->_db->get_jadwal(['tanggal' => date('Y-m-d')]);
 		$jadwal_prodi = $this->_db->get_jadwal(['tanggal' => date('Y-m-d'), 'ci_jadwal.group_id' => $this->session->userdata('group')]);
+
 		$data = [
 			'title' => 'Dashboard',
 			'jadwal' => $jadwal,
@@ -31,19 +32,42 @@ class Dashboard extends SI_Backend {
 		$this->site->load('dashboard', $data);
 	}
 
+	public function show($id)
+	{
+		$jadwals = $this->_db->get_jadwal(['ci_jadwal.id' => $id]);
+		
+		$sesi_old = $this->_db->sesi_kehadiran(['ci_kehadiran_dosen.id_jadwal' => $id]);
+		foreach ($jadwals as $jadwal) {
+			$data['jadwal'] = $jadwal;
+		}
+		$data['sesi_old'] = $sesi_old;
+
+
+		$this->load->view($this->view_table.'/jadwal/show', $data);
+	}
+
+	public function detail($id)
+	{
+		$jadwals = $this->_db->get_jadwal(['ci_jadwal.id' => $id]);
+
+		$sesi_old = $this->_db->sesi_kehadiran(['ci_kehadiran_dosen.id_jadwal' => $id]);
+		foreach ($jadwals as $jadwal) {
+			$data['jadwal'] = $jadwal;
+		}
+		$data['sesi_old'] = $sesi_old;
+
+
+		$this->load->view($this->view_table.'/jadwal/detail', $data);
+	}
+
 
 	public function update_kehadiran()
 	{
 		$id = $this->input->post('id', TRUE);
-		$sesi = $this->input->post('sesi', TRUE);
-		$this->db->where(['id_jadwal' => $id]);
-		$data_jadwal = $this->db->get('ci_kehadiran_dosen')->row();
-		$sesi_old = $data_jadwal->jumlah_sesi;
-	
-			$update = ['jumlah_sesi' => count($sesi)];
-		
-		
+		$sesi = $this->input->post('sesi_kuliah', TRUE);
+		$update = ['jumlah_sesi' => $sesi];
 		$update_save = $this->_db->update($update, ['id_jadwal' => $id], 'ci_kehadiran_dosen');
+		$update_save = $this->_db->update($update, ['id' => $id], 'ci_jadwal');
 		if ($update_save) {
 			$response['success'] = true; 
 			$response['message'] = "berhasil mengupdate data"; 
@@ -56,10 +80,11 @@ class Dashboard extends SI_Backend {
 
 	public function sesis_kehadiran()
 	{
-		$response['sesi_kuliah'] = get_count('ci_jadwal', 'sesi_kuliah', ['id' => $this->input->post('id')]);
-		$this->db->where(['id_jadwal' => $this->input->post('id')]);
-		$response['sisi_aktif'] = $this->db->get('ci_kehadiran_dosen')->row()->jumlah_sesi;
-		return $this->response($response);
+		$jadwal['sesi_kuliah'] = $this->_db->get_jadwal(['ci_jadwal.id' => $this->input->post('id')]);
+		//$response['sesi_kuliah'] = get_data('ci_jadwal', ['id' => $this->input->post('id')]);
+		// $this->db->where(['id_jadwal' => $this->input->post('id')]);
+		// $response['sisi_aktif'] = $this->db->get('ci_kehadiran_dosen')->row()->jumlah_sesi;
+		return $this->response($jadwal);
 	}
 
 	
