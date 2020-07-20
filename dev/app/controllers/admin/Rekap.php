@@ -3,6 +3,7 @@
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Reader\IReader;
 
 
 class Rekap extends SI_Backend {
@@ -11,6 +12,7 @@ class Rekap extends SI_Backend {
 	{
 		parent::__construct();
 		$this->load->model('M_Rekap', '_db');
+		$this->load->model('M_Export', 'export');
 	}
 
 	public function index()
@@ -232,7 +234,7 @@ class Rekap extends SI_Backend {
 				 $spreadsheet->getActiveSheet()->setTitle('Report Excel '.date('d-m-Y'));
 				 $spreadsheet->setActiveSheetIndex(0);
 
-				$filename = 'Report Kehadiran-'.$nama_dosen.'-'.date('d-m-Y his');
+				$filename = 'Report Kehadiran-'.$nama_dosen.'-'.date('d-m-Y');
  				$path = FCPATH . 'downloads/reporting/'.$filename.'.xlsx';
  				$data = [
  					'id_dosen' => $this->input->post('nama_dosen'),
@@ -320,6 +322,7 @@ class Rekap extends SI_Backend {
 				->wheres('ci_jadwal.tanggal <=', $this->input->post('range'))
 				->get();
 				$data['all'] = true;
+				
 
 
 			}
@@ -336,12 +339,10 @@ class Rekap extends SI_Backend {
 					->setDescription('Test document for Office 2007 XLSX, generated using PHP classes.')
 					->setKeywords('office 2007 openxml php')
 					->setCategory('Test result file');
-						
-					  // Add some data
-						
-
-						if ($data['all'] != true) {
-							$spreadsheet->setActiveSheetIndex(0)
+					if ($data['all'] == false) {
+						$data['status'] = true;
+			        	$data['message'] = "File berhasil di generate, Silahkan klik download pada button yg di sediakan";
+			        	$spreadsheet->setActiveSheetIndex(0)
 							->setCellValue('A1', 'REKAP KEHADIRAN MENGAJAR DOSEN SEKOLAH PASCASARJANA UIKA BOGOR')
 							->setCellValue('A3', 'Periode : ')
 							->setCellValue('B3',  $tanggal.' s/d '.$range )
@@ -352,8 +353,9 @@ class Rekap extends SI_Backend {
 							->setCellValue('E5', 'Sesi Wajib')
 							->setCellValue('F5', 'Sesi Hadir')
 							->setCellValue('G5', 'Tanggal');
-						} else {
-							$spreadsheet->setActiveSheetIndex(0)
+
+					} else {
+						$spreadsheet->setActiveSheetIndex(0)
 							->setCellValue('A1', 'REKAP KEHADIRAN MENGAJAR DOSEN SEKOLAH PASCASARJANA UIKA BOGOR')
 							->setCellValue('A3', 'Periode : ')
 							->setCellValue('B3',  $tanggal.' s/d '.$range )
@@ -365,105 +367,138 @@ class Rekap extends SI_Backend {
 							->setCellValue('F5', 'Sesi Wajib')
 							->setCellValue('G5', 'Sesi Hadir')
 							->setCellValue('H5', 'Tanggal');
+					}
+
+					$styleTitle = [
+					    'font' => [
+					        'bold' => true,
+					        'size' => 18,
+					    ],
+					    'alignment' => [
+					        'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT,
+					    ]
+					];
+
+					$StyleName = [
+					    'font' => [
+					        'bold' => true,
+					        'size' => 15,
+					    ],
+					    'alignment' => [
+					        'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT,
+					    ]
+					];
+
+					$styleBorder = [
+					    'borders' => [
+					        'allBorders' => [
+					            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THICK,
+					            'color' => ['argb' => 'FFFF0000'],
+					        ],
+					        'outline' => [
+					            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THICK,
+					            'color' => ['argb' => 'FFFF0000'],
+					        ],
+					    ],
+					];
+
+					$spreadsheet->getActiveSheet()->getStyle('A1')->applyFromArray($styleTitle);
+					$spreadsheet->getActiveSheet()->getStyle('A2:B3')->applyFromArray($StyleName);
+					$spreadsheet->getActiveSheet()->getStyle('A5:G1')->applyFromArray($styleBorder);
+					$spreadsheet->getActiveSheet()->mergeCells("B3:G3");
+					$spreadsheet->getActiveSheet()->mergeCells("B2:G2");
+					$spreadsheet->getActiveSheet()->mergeCells("A1:G1");
+					$spreadsheet->getActiveSheet()->getColumnDimension('A')->setAutoSize(true);
+					$spreadsheet->getActiveSheet()->getColumnDimension('B')->setAutoSize(true);
+					$spreadsheet->getActiveSheet()->getColumnDimension('C')->setAutoSize(true);
+					$spreadsheet->getActiveSheet()->getColumnDimension('D')->setAutoSize(true);
+					$spreadsheet->getActiveSheet()->getColumnDimension('E')->setAutoSize(true);
+					$spreadsheet->getActiveSheet()->getColumnDimension('F')->setAutoSize(true);
+					$spreadsheet->getActiveSheet()->getColumnDimension('G')->setAutoSize(true);
+					$spreadsheet->getActiveSheet()->getColumnDimension('H')->setAutoSize(true);
+			      	$nama_dosen = '';
+					$excel_row = 6;
+
+					foreach ($rekap as $row) {
+						if ($data['all'] == false) {
+							$spreadsheet->setActiveSheetIndex(0)
+							  ->setCellValue('A2', 'Nama Dosen : ')
+							  ->setCellValue('B2',  $row->nama_dosen )
+							  ->setCellValue('A'.$excel_row, $row->nama_prodi)
+							  ->setCellValue('B'.$excel_row, $row->semester)
+							  ->setCellValue('C'.$excel_row, $row->nama_matkul)
+							  ->setCellValue('D'.$excel_row, $row->nama_ruangan)
+							  ->setCellValue('E'.$excel_row, $row->sesi_kuliah)
+							  ->setCellValue('F'.$excel_row, $row->jumlah_sesi)
+							  ->setCellValue('G'.$excel_row, $row->tanggal);
+							$nama_dosen = $row->nama_dosen;
+						} else {
+							$spreadsheet->setActiveSheetIndex(0)
+							  ->setCellValue('A'.$excel_row,  $row->nama_dosen )
+							  ->setCellValue('B'.$excel_row, $row->nama_prodi)
+							  ->setCellValue('C'.$excel_row, $row->semester)
+							  ->setCellValue('D'.$excel_row, $row->nama_matkul)
+							  ->setCellValue('E'.$excel_row, $row->nama_ruangan)
+							  ->setCellValue('F'.$excel_row, $row->sesi_kuliah)
+							  ->setCellValue('G'.$excel_row, $row->jumlah_sesi)
+							  ->setCellValue('H'.$excel_row, $row->tanggal);
+							$nama_dosen = "ALL";
 						}
-						$styleTitle = [
-						    'font' => [
-						        'bold' => true,
-						        'size' => 18,
-						    ],
-						    'alignment' => [
-						        'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT,
-						    ]
-						];
+						$excel_row++;
+					}
+				 $writer = new Xlsx($spreadsheet);
+				 $spreadsheet->getActiveSheet()->setTitle('Report Excel '.date('d-m-Y'));
+				 $spreadsheet->setActiveSheetIndex(0);
+				 $filename = 'Report Kehadiran -'.$nama_dosen.'- Periode -'.tgl_indo($tanggal).' sd '.tgl_indo($range).'-Generate date-'.date('d-m-Y');
+				 $path = FCPATH . 'downloads/reporting/'.$filename.'.xlsx';	
+				 $report = $writer->save($path);
 
-						$StyleName = [
-						    'font' => [
-						        'bold' => true,
-						        'size' => 15,
-						    ],
-						    'alignment' => [
-						        'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT,
-						    ]
-						];
+				$data['status'] = true;
+				$data['message'] ="data berhasil di generate";
+				$insert = [
+ 					'id_dosen' => $this->input->post('nama_dosen'),
+		 			'name' => $filename,
+		 			'periode_tgl' => $this->input->post('tanggal'),
+		 			'periode_range' => $this->input->post('range'),
+		 			'id_group' => $this->session->userdata('group')
+		 		];
 
-						$styleBorder = [
-						    'borders' => [
-						        'allBorders' => [
-						            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THICK,
-						            'color' => ['argb' => 'FFFF0000'],
-						        ],
-						        'outline' => [
-						            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THICK,
-						            'color' => ['argb' => 'FFFF0000'],
-						        ],
-						    ],
-						];
-
-						$spreadsheet->getActiveSheet()->getStyle('A1')->applyFromArray($styleTitle);
-						$spreadsheet->getActiveSheet()->getStyle('A2:B3')->applyFromArray($StyleName);
-						$spreadsheet->getActiveSheet()->getStyle('A5:G1')->applyFromArray($styleBorder);
-						$spreadsheet->getActiveSheet()->mergeCells("B3:G3");
-						$spreadsheet->getActiveSheet()->mergeCells("B2:G2");
-						$spreadsheet->getActiveSheet()->mergeCells("A1:G1");
-						$spreadsheet->getActiveSheet()->getColumnDimension('A')->setAutoSize(true);
-						$spreadsheet->getActiveSheet()->getColumnDimension('B')->setAutoSize(true);
-						$spreadsheet->getActiveSheet()->getColumnDimension('C')->setAutoSize(true);
-						$spreadsheet->getActiveSheet()->getColumnDimension('D')->setAutoSize(true);
-						$spreadsheet->getActiveSheet()->getColumnDimension('E')->setAutoSize(true);
-						$spreadsheet->getActiveSheet()->getColumnDimension('F')->setAutoSize(true);
-						$spreadsheet->getActiveSheet()->getColumnDimension('G')->setAutoSize(true);
-						$spreadsheet->getActiveSheet()->getColumnDimension('H')->setAutoSize(true);
-
-
-					  $nama_dosen = '';
-					  $excel_row = 6;
-					  foreach ($rekap as $row) {
-					  	if ($data['all'] != true) {
-					  		$spreadsheet->setActiveSheetIndex(0)
-						  ->setCellValue('A2', 'Nama Dosen : ')
-						  ->setCellValue('B2',  $row->nama_dosen )
-						  ->setCellValue('A'.$excel_row, $row->nama_prodi)
-						  ->setCellValue('B'.$excel_row, $row->semester)
-						  ->setCellValue('C'.$excel_row, $row->nama_matkul)
-						  ->setCellValue('D'.$excel_row, $row->nama_ruangan)
-						  ->setCellValue('E'.$excel_row, $row->sesi_kuliah)
-						  ->setCellValue('F'.$excel_row, $row->jumlah_sesi)
-						  ->setCellValue('G'.$excel_row, $row->tanggal);
-						  $nama_dosen = $row->nama_dosen;
-					  	} else {
-					  		$spreadsheet->setActiveSheetIndex(0)
-						  ->setCellValue('A'.$excel_row,  $row->nama_dosen )
-						  ->setCellValue('B'.$excel_row, $row->nama_prodi)
-						  ->setCellValue('C'.$excel_row, $row->semester)
-						  ->setCellValue('D'.$excel_row, $row->nama_matkul)
-						  ->setCellValue('E'.$excel_row, $row->nama_ruangan)
-						  ->setCellValue('F'.$excel_row, $row->sesi_kuliah)
-						  ->setCellValue('G'.$excel_row, $row->jumlah_sesi)
-						  ->setCellValue('H'.$excel_row, $row->tanggal);
-						  $nama_dosen = "ALL";
-					  	}
-					   $excel_row++;
-					  }
-					 $writer = new Xlsx($spreadsheet);
-					 $spreadsheet->getActiveSheet()->setTitle('Report Excel '.date('d-m-Y'));
-					 $spreadsheet->setActiveSheetIndex(0);
-					  
-
-					$filename = 'Report Kehadiran-'.$nama_dosen.'-'.date('d-m-Y his');
-	 				$path = FCPATH . 'downloads/reporting/'.$filename.'.xlsx';
-	 				$input_excel = [
-	 					'id_dosen' => $this->input->post('nama_dosen'),
+		 		if ($data['all'] == true) {
+		 			$insert = [
+		 				'status_all' => 1,
+		 				'id_dosen' => 16,
 			 			'name' => $filename,
-			 			'periode_tgl' => $tanggal,
-			 			'periode_range' => $range,
-			 		];
-			 		$this->db->set($input_excel);
-			 		$this->db->insert('excel_reporting');
-			 		
+			 			'periode_tgl' => $this->input->post('tanggal'),
+			 			'periode_range' => $this->input->post('range'),
+			 			'id_group' => $this->session->userdata('group')
+		 			];
+		 		}
 
-			 	  $report = $writer->save($path);
-			      	$data['status'] = true;
-			        $data['message'] = "File berhasil di generate, Silahkan klik download pada button yg di sediakan";
+		 		
+			 		if (is_file(base_url('downloads/reporting/'.$filename.'.xlsx'))) {
+				 		$insert_update = [
+				 			'date' => date('Y-m-d H:i:s')
+				 		];
+
+				 		$this->db->where('name', $filename);
+				 		$this->db->update('excel_reporting', $insert_update);
+			 		} else {
+			 			$this->db->where('name', $filename);
+			 			$report = $this->db->get('excel_reporting');
+			 			if ($report->num_rows() > 0) {
+			 				$insert_update = [
+					 			'date' => date('Y-m-d H:i:s')
+					 		];
+
+					 		$this->db->where('name', $filename);
+					 		$this->db->update('excel_reporting', $insert_update);
+			 			} else {
+			 				$this->db->set($insert);
+					 		$this->db->insert('excel_reporting');			 				
+			 			}
+						
+			 		}
+
 				} else {
 					$data['rekap'] = $rekap;	
 					$data['status'] = true;
@@ -480,6 +515,73 @@ class Rekap extends SI_Backend {
 			$data['message'] = "tanggal awal tidak boleh lebih besar dari range";
 		}
 		return $this->response($data);	
+	}
+
+	public function show_log()
+	{
+		$this->load->library('Datatables');
+		//if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest' ) {
+		// $this->load->model('M_Export', 'export');	
+		// if (get_group('group_code') != 'ADM') {
+		// 	$this->export->jadwal_where(['excel_reporting.id_group' => $this->session->userdata('group')]);	
+		// }
+
+
+		// $datas	= $this->export->select(
+		// 		[
+		// 			'excel_reporting.id','excel_reporting.name','ci_dosen.nama_dosen','excel_reporting.periode_tgl','excel_reporting.periode_range','excel_reporting.date','si_group.group'
+		// 		])
+		// 	->getJoin()
+		// 	->search_item(
+		// 		['ci_dosen.nama_dosen','excel_reporting.name', 'excel_reporting.date'
+		// 		])
+		// 	->column_order([null,'nama_dosen', 'name', 'periode', 'tanggal', null])
+		// 	->datatables();
+
+
+
+		// $data_menu = $this->export->getRequestAjax('excel_reporting');
+		// $data = array();
+		// 	$no = $_POST['start'];
+		// 	foreach ($data_menu as $r) {
+		// 		$no++;
+		// 		$row = array();
+		// 		$row[] = $no;
+		// 		$row[] = $r->nama_dosen;
+		// 		$row[] = $r->name;
+		// 		$row[] = $r->periode_tgl.' s/d '.$r->periode_range;
+		// 		$row[] = $r->date;
+		// 		$row[] = '
+		// 		<div class="text-center"><a target="_blank" href="'.base_url('downloads/reporting/'.$r->name.'.xlsx').'"> <i class="fa fa-download"></i> Download File </a>
+		// 		</div>';
+		// 		$data[] = $row;
+		// 	}
+
+		// 	$json_data = [
+		// 		"draw" => $_POST['draw'],
+		// 		"recordsTotal" => $this->export->count_all(),
+		// 		"recordsFiltered" => $this->export->count_filtered(),
+		// 		'data' => $data
+		// 	];
+
+			return $this->output_json($this->export->datatables_data(), false);
+		//}
+	}
+
+	public function output_json($data, $encode = true)
+    {
+        if ($encode) $data = json_encode($data);
+        $this->output->set_content_type('application/json')->set_output($data);
+    }
+
+	public function download_file($id)
+	{
+		$this->load->helper('download');
+		$this->db->where('id',$id);
+		$get = $this->db->get('excel_reporting')->row();
+		$filename = $get->name.'.xlsx';
+		$path = file_get_contents(base_url('downloads/reporting/'.$filename));
+		return force_download($get->name, $path);
 	}
 
 

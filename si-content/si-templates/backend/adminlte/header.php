@@ -26,7 +26,17 @@ scratch. This page gets rid of all links and provides the needed markup only.
   <!-- Pace style -->
   <link rel="stylesheet" href="<?= get_template_dir(dirname(__FILE__), 'include/plugins/pace/pace.min.css'); ?>">
   <!-- DataTables -->
-  <link rel="stylesheet" href="<?= get_template_dir(dirname(__FILE__), 'include/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css'); ?>">
+
+
+  <link href="<?= get_template_dir(dirname(__FILE__), 'include/datatables/jquery.dataTables.min.css'); ?>" rel="stylesheet" type="text/css" />
+  <link href="<?= get_template_dir(dirname(__FILE__), 'include/datatables/buttons.bootstrap.min.css'); ?>" rel="stylesheet" type="text/css" />
+  <link href="<?= get_template_dir(dirname(__FILE__), 'include/datatables/fixedHeader.bootstrap.min.css'); ?>" rel="stylesheet" type="text/css" />
+  <link href="<?= get_template_dir(dirname(__FILE__), 'include/datatables/responsive.bootstrap.min.css'); ?>" rel="stylesheet" type="text/css" />
+  <link href="<?= get_template_dir(dirname(__FILE__), 'include/datatables/scroller.bootstrap.min.css'); ?>" rel="stylesheet" type="text/css" /> 
+
+
+
+
   <link rel="stylesheet" href="<?= get_template_dir(dirname(__FILE__), 'include/toastr/build/toastr.css') ?>">
   <link rel="stylesheet" href="<?= get_template_dir(dirname(__FILE__), 'include/css/custom.css') ?>">
   <link rel="stylesheet" href="<?= get_template_dir(dirname(__FILE__), 'include/plugins/datepicker/datepicker3.css') ?>"/>

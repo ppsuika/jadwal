@@ -174,7 +174,7 @@ class SI_Model extends CI_Model {
 	}
 
 
-	public function _get_datatables_query($select_data = null)
+	public function _get_datatables_query($select_data = null, $table_name = null)
 	{
 		//SELECT * FROM ar_users JOIN ar_role ON ar_role.id = ar_users.role
 		$select_dat = implode(', ', $this->select);
@@ -229,7 +229,7 @@ class SI_Model extends CI_Model {
 			$a = '';
 		}
 
-		 return $a;
+		 return $this;
 	}
 
 	public function wheres($columns, $condition)

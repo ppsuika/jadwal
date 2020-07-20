@@ -74,7 +74,7 @@
                               <div class="input-group-addon">
                                 <i class="fa fa-calendar"></i>
                               </div>
-                              <input type="text" name="tanggal" value="<?= $tanggal ?>" class="form-control pull-right datepicker" id="">
+                              <input type="text" name="tanggal" value="<?= $tanggal ?>" class="form-control pull-right datepicker" >
                             </div>
                           <small class="info help-block required">
                            
@@ -87,7 +87,7 @@
                               <div class="input-group-addon">
                                 <i class="fa fa-calendar"></i>
                               </div>
-                              <input type="text" name="range" value="<?= $tanggal ?>" class="form-control pull-right datepicker" id="">
+                              <input type="text" name="range" value="<?= $tanggal ?>" class="form-control pull-right datepicker" >
                             </div>
                           <small class="info help-block required">
                            
@@ -122,6 +122,27 @@
 
    </div>
    
+  
+  <h2>Download Excel</h2>
+   <div class="table-responsive">
+     <table id="log-generate" class="table table-bordered table-striped dataTable">
+        <thead class="head-table">
+          <tr class="">
+           <th>
+            #
+           </th>
+           <th >Nama Dosen</th>
+           <th >Nama file</th>
+           <th>Periode</th>
+           <th>Tanggal Generate</th>
+           <th>Download File</th>
+        </tr>
+        </thead>
+        <tbody>
+ 
+        </tbody>
+    </table>
+   </div>
 </section>
 
 
@@ -129,7 +150,106 @@
 
 <script type="text/javascript">
 $(document).ready(function(){
- 
+  $.fn.dataTableExt.oApi.fnPagingInfo = function(oSettings) {
+          return {
+            "iStart": oSettings._iDisplayStart,
+            "iEnd": oSettings.fnDisplayEnd(),
+            "iLength": oSettings._iDisplayLength,
+            "iTotal": oSettings.fnRecordsTotal(),
+            "iFilteredTotal": oSettings.fnRecordsDisplay(),
+            "iPage": Math.ceil(oSettings._iDisplayStart / oSettings._iDisplayLength),
+            "iTotalPages": Math.ceil(oSettings.fnRecordsDisplay() / oSettings._iDisplayLength)
+          };
+        };
+  function reload_ajax() {
+    table.ajax.reload(null, false);
+  }
+  table = $("#log-generate").DataTable({
+    initComplete: function() {
+      var api = this.api();
+      $("#log-generate input")
+        .off(".DT")
+        .on("keyup.DT", function(e) {
+          api.search(this.value).draw();
+        });
+    },
+    dom:
+      "<'row'<'col-sm-3'l><'col-sm-6 text-center'B><'col-sm-3'f>>" +
+      "<'row'<'col-sm-12'tr>>" +
+      "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+    buttons: [
+      
+    ],
+    oLanguage: {
+      sProcessing: "loading..."
+    },
+    processing: true,
+    serverSide: true,
+    ajax: {
+      url: BASE_URL + "admin/rekap/show_log",
+      type: "POST"
+      //data: csrf
+    },
+    columns: [
+      {
+        data: "id",
+        orderable: false,
+        searchable: false
+      },
+      { data: "nama_dosen" },
+      { data: "name" },
+      { data: {
+          tanggal: "periode_tgl",
+          range: "periode_range"
+        },
+        orderable: false,
+        searchable: false,
+        render: function(data, type, row, meta) {
+           return `<span class="badge badge-pill badge-info">${data.periode_tgl } s/d ${data.periode_range}</span>`;
+
+        }
+      },
+      { data: "date" },
+    ],
+    columnDefs: [
+      {
+        searchable: false,
+        targets: 5,
+        data: {
+          id: "id",
+          name : "name",
+          status_all: 'status_all' 
+         
+        },
+        render: function(data, type, row, meta) {
+          let file_name =data.name;
+          
+          return `<div class="text-center">
+                  <a title="Edit data terpilih" class="btn btn-xs btn-warning" href="${BASE_URL}downloads/reporting/${file_name}.xlsx">
+                    <i class="fa fa-download"></i>
+                  </a>
+                `;
+        }
+      },
+     
+    ],
+    order: [[1, "asc"]],
+    rowId: function(a) {
+      return a;
+    },
+    rowCallback: function(row, data, iDisplayIndex) {
+      var info = this.fnPagingInfo();
+      var page = info.iPage;
+      var length = info.iLength;
+      var index = page * length + (iDisplayIndex + 1);
+      $("td:eq(0)", row).html(index);
+    }
+  });
+
+  table
+    .buttons()
+    .container()
+    .appendTo("#log-generate .col-md-6:eq(0)");
 
  $('.timepicker').datetimepicker({
 
@@ -147,59 +267,10 @@ $(document).ready(function(){
 
     });
 
-
     
-
-    
-
-    // $('.btn_get_data').click(function(e){
-    //   e.preventDefault(); 
-
-    //       var url = '<?= base_url('admin/rekap/get'); ?>';
-    //       var save_type = 'back';
-    //       var form = $('#form')[0];
-
-    //        $.ajax({
-    //            url: url,
-    //            type:"post",
-    //            dataType: 'json',
-    //            data:new FormData(form),
-    //            processData:false,
-    //            contentType:false,
-    //            cache:false,
-    //            async:false,
-    //        })
-
-    //         .done(function(data){
-    //             $('.table').show();  
-    //             // $(res).each(res, function(key, r){
-    //             //     // $("table #tbody_content").append($("<tr>"))
-    //             //     // .append($("<td>")).append(r.nama_prodi)
-    //             //     // .append($("<td>")).append(r.nama_matkul)
-    //             //     // .append($("<td>")).append(r.nama_dosen)
-    //             //     // .append($("<td>")).append(r.nama_ruangan)
-    //             //     // .append($("<td>")).append(r.tanggal)
-    //             //       console.log(r)
-
-
-    //             // });
-
-    //             $.each(data, function(i, items) {
-    //                $.each(data, function(items, item) {
-    //                 console.log(item.nama_prodi);
-    //               });
-    //             });
-                 
-    //         }) 
-    // }); 
-
-    // function reset() {
-       
-    // } 
-
 
     $('#btn_save').click(function(event) {
-      
+          
           var url = '<?= base_url('admin/rekap/show'); ?>';
           var save_type = 'back';
           var form = $('#form')[0];
@@ -305,15 +376,18 @@ $(document).ready(function(){
           if (res.status == true) {
             toastr['success'](res.message);
             $('#modal_rekap').modal('hide');
+            table.ajax.reload(null,false);
             return 
           } else {
             toastr['error'](res.message);
             $('#modal_rekap').modal('hide');
+            table.ajax.reload(null,false);
             return
           }
         })
         .fail(function(res) {
           toastr['error'](res.message);
+          table.ajax.reload(null,false);
         })
         
         
@@ -361,7 +435,7 @@ $(document).ready(function(){
             </div>
             <div class="modal-body  form-horizontal">
                 <div class="table-responsive"> 
-                  <table class="table table-bordered table-striped dataTable">
+                  <table id="log-generate" class="table table-bordered table-striped dataTable">
                    
                     <tr class="tr_dosen">
                       <td>Nama Dosen </td>
@@ -418,3 +492,5 @@ $(document).ready(function(){
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
+
+

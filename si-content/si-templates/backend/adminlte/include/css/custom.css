@@ -19,7 +19,7 @@ table.dataTable thead .sorting:after {
 }
 .dataTables_paginate.paging_simple_numbers, .dataTables_paginate .pagination {
     margin-top: 0px !important;
-    float: left;
+    /*float: left;*/
 }
 .padd-left-0 {
     padding-left: 0px !important;

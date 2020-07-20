@@ -31,8 +31,24 @@
 <script src="<?= get_template_dir(dirname(__FILE__), 'include/plugins/input-mask/jquery.inputmask.date.extensions.js') ?>"></script>
 <script src="<?= get_template_dir(dirname(__FILE__), 'include/plugins/input-mask/jquery.inputmask.extensions.js') ?>"></script>
 <!-- DataTables -->
-<script src="<?= get_template_dir(dirname(__FILE__), 'include/bower_components/datatables.net/js/jquery.dataTables.min.js') ?>"></script>
-<script src="<?= get_template_dir(dirname(__FILE__), 'include/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js') ?>"></script>
+
+<script src="<?= get_template_dir(dirname(__FILE__), 'include/datatables/jquery.dataTables.min.js') ?>"></script>
+        <script src="<?= get_template_dir(dirname(__FILE__), 'include/datatables/dataTables.bootstrap.js') ?>"></script>
+        <script src="<?= get_template_dir(dirname(__FILE__), 'include/datatables/dataTables.buttons.min.js') ?>"></script>
+        <script src="<?= get_template_dir(dirname(__FILE__), 'include/datatables/buttons.bootstrap.min.js') ?>"></script>
+        <script src="<?= get_template_dir(dirname(__FILE__), 'include/datatables/jszip.min.js') ?>"></script>
+        <script src="<?= get_template_dir(dirname(__FILE__), 'include/datatables/pdfmake.min.js') ?>"></script>
+        <script src="<?= get_template_dir(dirname(__FILE__), 'include/datatables/vfs_fonts.js') ?>"></script>
+        <script src="<?= get_template_dir(dirname(__FILE__), 'include/datatables/buttons.html5.min.js') ?>"></script>
+        <script src="<?= get_template_dir(dirname(__FILE__), 'include/datatables/buttons.print.min.js') ?>"></script>
+        <script src="<?= get_template_dir(dirname(__FILE__), 'include/datatables/dataTables.fixedHeader.min.js') ?>"></script>
+        <script src="<?= get_template_dir(dirname(__FILE__), 'include/datatables/dataTables.keyTable.min.js') ?>"></script>
+        <script src="<?= get_template_dir(dirname(__FILE__), 'include/datatables/dataTables.responsive.min.js') ?>"></script>
+        <script src="<?= get_template_dir(dirname(__FILE__), 'include/datatables/responsive.bootstrap.min.js') ?>"></script>
+        <script src="<?= get_template_dir(dirname(__FILE__), 'include/datatables/dataTables.scroller.min.js') ?>"></script>
+
+
+
 <script src="<?= get_template_dir(dirname(__FILE__), 'include/js/custom.js') ?>"></script> 
 <script src="<?= get_template_dir(dirname(__FILE__), 'include/fancy-box/source/jquery.fancybox.js?v=2.1.5') ?>"></script>
 <script src="<?= get_template_dir(dirname(__FILE__), 'include/toastr/toastr.js') ?>"></script>
