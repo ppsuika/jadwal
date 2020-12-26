@@ -17,6 +17,12 @@ class Rekap extends SI_Backend {
 
 	public function index()
 	{
+		$this->site->load('rekap/rekap');
+		
+	}
+
+	public function dosen()
+	{
 		$data = array(
 
         'id' => set_value('id'),
@@ -46,7 +52,105 @@ class Rekap extends SI_Backend {
 		
 	}
 
+
+	public function agenda()
+	{
+		$data = array(
+
+        'id' => set_value('id'),
+
+        'nama_prodi' => set_value('nama_prodi'),
+
+        'nama_matkul' => set_value('nama_matkul'),
+
+        'nama_dosen' => set_value('nama_dosen'),
+
+        'nama_ruangan' => set_value('nama_ruangan'),
+
+        'dosen_pengganti' => set_value('dosen_pengganti'),
+
+        'semester' => set_value('semester'),
+
+    	'jam_mulai' => set_value('jam_mulai'),
+
+    	'jam_berakhir' => set_value('jam_berakhir'),
+
+    	'tanggal' => set_value('tanggal'),
+
+    	'jml_mahasiswa' => set_value('jml_mahasiswa'),
+
+    	);
+		$this->site->load('rekap/agenda', $data);
+	}
+
 	public function get()
+	{
+		if (($this->input->post('tanggal') == null || $this->input->post('range') == null) || ($this->input->post('tanggal') == null && $this->input->post('range') == null) || $this->input->post('nama_dosen') == null) {
+			 $this->session->set_flashdata('message', 'tanggal / nama dosen tidak boleh di kosongkan');
+			 redirect('admin/rekap');
+		}
+		$tanggal = date('Y-m-d', strtotime($this->input->post('tanggal')));
+		$range = date('Y-m-d', strtotime($this->input->post('range')));
+
+		if ($tanggal <= $range) {	
+				$data = $this->_db->select('ci_jadwal.id,ci_prodi.nama_prodi,ci_jadwal.semester,ci_matkul.nama_matkul,ci_dosen.nama_dosen,ci_jadwal.dosen_pengganti,ci_ruangan.nama_ruangan,ci_ruangan.gedung,ci_jadwal.jml_mahasiswa,ci_jadwal.jam_mulai,ci_jadwal.jam_berakhir,ci_jadwal.tanggal')
+				->join('ci_prodi', 'nama_prodi', 'left')
+				->join('ci_matkul', 'nama_matkul', 'left')
+				->join('ci_dosen', 'nama_dosen', 'left')
+				->join('ci_ruangan', 'kode_ruangan', 'left')
+				->wheres('ci_jadwal.nama_dosen', $this->input->post('nama_dosen'))
+				->wheres('ci_jadwal.tanggal >=', $this->input->post('tanggal'))
+				->wheres('ci_jadwal.tanggal <=', $this->input->post('range'))
+				->get('');
+			$this->load->library("Excel");	
+
+
+			
+			if ($data) {
+				$object = new PHPExcel();
+				 $object->setActiveSheetIndex(0);
+
+				  $table_columns = array("Program Studi", "Matakuliah", "Dosen", "Ruangan", "Tanggal");
+
+				  $column = 0;
+				  foreach($table_columns as $field)
+				  {
+				   $object->getActiveSheet()->setCellValueByColumnAndRow($column, 1, $field);
+				   $column++;
+				  }
+
+				  
+				  $excel_row = 2;
+				  foreach ($data as $row) {
+				  
+				   $object->getActiveSheet()->setCellValueByColumnAndRow(0, $excel_row, $row->nama_prodi);
+				   $object->getActiveSheet()->setCellValueByColumnAndRow(1, $excel_row, $row->nama_matkul);
+				   $object->getActiveSheet()->setCellValueByColumnAndRow(2, $excel_row, $row->nama_dosen);
+				   $object->getActiveSheet()->setCellValueByColumnAndRow(3, $excel_row, $row->nama_ruangan);
+				   $object->getActiveSheet()->setCellValueByColumnAndRow(4, $excel_row, $row->tanggal);
+				   $excel_row++;
+				 }
+
+				  $object_writer = PHPExcel_IOFactory::createWriter($object, 'Excel5');
+				  header('Content-Type: application/vnd.ms-excel');
+				  header('Content-Disposition: attachment;filename="Rekap.xls"');
+				  echo $object_writer->save('php://output');
+			} else {
+				$this->session->set_flashdata('message', "Data kehadiran tidak ada");
+			 redirect('admin/rekap');
+			}
+		
+		 
+
+
+		} else {
+			$this->session->set_flashdata('message', "tanggal awal tidak boleh lebih besar dari range");
+			 redirect('admin/rekap');
+
+		}
+	}
+
+	public function get_agenda()
 	{
 		if (($this->input->post('tanggal') == null || $this->input->post('range') == null) || ($this->input->post('tanggal') == null && $this->input->post('range') == null) || $this->input->post('nama_dosen') == null) {
 			 $this->session->set_flashdata('message', 'tanggal / nama dosen tidak boleh di kosongkan');
@@ -301,7 +405,7 @@ class Rekap extends SI_Backend {
 		if ($tanggal <= $range) {	
 
 			if ($this->input->post('nama_dosen')) {
-				$rekap = $this->_db->select('ci_jadwal.id,ci_prodi.nama_prodi,ci_jadwal.semester,ci_matkul.nama_matkul,ci_dosen.nama_dosen,ci_jadwal.dosen_pengganti,ci_ruangan.nama_ruangan,ci_ruangan.gedung,ci_jadwal.jml_mahasiswa,ci_jadwal.jam_mulai,ci_jadwal.jam_berakhir,ci_jadwal.tanggal, ci_jadwal.sesi_kuliah, ci_jadwal.jumlah_sesi')
+				$rekap = $this->_db->select('ci_jadwal.id,ci_prodi.nama_prodi,ci_jadwal.semester,ci_matkul.nama_matkul,ci_dosen.nama_dosen, ci_dosen.kode_dosen,ci_jadwal.dosen_pengganti,ci_ruangan.nama_ruangan,ci_ruangan.gedung,ci_jadwal.jml_mahasiswa,ci_jadwal.jam_mulai,ci_jadwal.jam_berakhir,ci_jadwal.tanggal, ci_jadwal.sesi_kuliah, ci_jadwal.jumlah_sesi')
 				->join('ci_prodi', 'nama_prodi', 'left')
 				->join('ci_matkul', 'nama_matkul', 'left')
 				->join('ci_dosen', 'nama_dosen', 'left')
@@ -313,7 +417,7 @@ class Rekap extends SI_Backend {
 				$data['all'] = false;
 			
 			} else {
-				$rekap = $this->_db->select('ci_jadwal.id,ci_prodi.nama_prodi,ci_jadwal.semester,ci_matkul.nama_matkul,ci_dosen.nama_dosen,ci_jadwal.dosen_pengganti,ci_ruangan.nama_ruangan,ci_ruangan.gedung,ci_jadwal.jml_mahasiswa,ci_jadwal.jam_mulai,ci_jadwal.jam_berakhir,ci_jadwal.tanggal, ci_jadwal.sesi_kuliah, ci_jadwal.jumlah_sesi')
+				$rekap = $this->_db->select('ci_jadwal.id,ci_prodi.nama_prodi,ci_jadwal.semester,ci_matkul.nama_matkul,ci_dosen.nama_dosen, ci_dosen.kode_dosen, ci_jadwal.dosen_pengganti,ci_ruangan.nama_ruangan,ci_ruangan.gedung,ci_jadwal.jml_mahasiswa,ci_jadwal.jam_mulai,ci_jadwal.jam_berakhir,ci_jadwal.tanggal, ci_jadwal.sesi_kuliah, ci_jadwal.jumlah_sesi')
 				->join('ci_prodi', 'nama_prodi', 'left')
 				->join('ci_matkul', 'nama_matkul', 'left')
 				->join('ci_dosen', 'nama_dosen', 'left')
@@ -359,14 +463,237 @@ class Rekap extends SI_Backend {
 							->setCellValue('A1', 'REKAP KEHADIRAN MENGAJAR DOSEN SEKOLAH PASCASARJANA UIKA BOGOR')
 							->setCellValue('A3', 'Periode : ')
 							->setCellValue('B3',  $tanggal.' s/d '.$range )
-							->setCellValue('A5', 'Nama Dosen')
-							->setCellValue('B5', 'Program Studi')
-							->setCellValue('C5', 'Semester')
-							->setCellValue('D5', 'Matakuliah')
-							->setCellValue('E5', 'Ruangan')
-							->setCellValue('F5', 'Sesi Wajib')
-							->setCellValue('G5', 'Sesi Hadir')
-							->setCellValue('H5', 'Tanggal');
+							->setCellValue('A5', 'ID DOSEN')
+							->setCellValue('B5', 'Nama Dosen')
+							->setCellValue('C5', 'Program Studi')
+							->setCellValue('D5', 'Semester')
+							->setCellValue('E5', 'Matakuliah')
+							->setCellValue('F5', 'Ruangan')
+							->setCellValue('G5', 'Sesi Wajib')
+							->setCellValue('H5', 'Sesi Hadir')
+							->setCellValue('I5', 'Tanggal');
+					}
+
+					$styleTitle = [
+					    'font' => [
+					        'bold' => true,
+					        'size' => 18,
+					    ],
+					    'alignment' => [
+					        'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT,
+					    ]
+					];
+
+					$StyleName = [
+					    'font' => [
+					        'bold' => true,
+					        'size' => 15,
+					    ],
+					    'alignment' => [
+					        'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT,
+					    ]
+					];
+
+					$styleBorder = [
+					    'borders' => [
+					        'allBorders' => [
+					            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THICK,
+					            'color' => ['argb' => 'FFFF0000'],
+					        ],
+					        'outline' => [
+					            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THICK,
+					            'color' => ['argb' => 'FFFF0000'],
+					        ],
+					    ],
+					];
+
+					$spreadsheet->getActiveSheet()->getStyle('A1')->applyFromArray($styleTitle);
+					$spreadsheet->getActiveSheet()->getStyle('A2:B3')->applyFromArray($StyleName);
+					$spreadsheet->getActiveSheet()->getStyle('A5:G1')->applyFromArray($styleBorder);
+					$spreadsheet->getActiveSheet()->mergeCells("B3:G3");
+					$spreadsheet->getActiveSheet()->mergeCells("B2:G2");
+					$spreadsheet->getActiveSheet()->mergeCells("A1:G1");
+					$spreadsheet->getActiveSheet()->getColumnDimension('A')->setAutoSize(true);
+					$spreadsheet->getActiveSheet()->getColumnDimension('B')->setAutoSize(true);
+					$spreadsheet->getActiveSheet()->getColumnDimension('C')->setAutoSize(true);
+					$spreadsheet->getActiveSheet()->getColumnDimension('D')->setAutoSize(true);
+					$spreadsheet->getActiveSheet()->getColumnDimension('E')->setAutoSize(true);
+					$spreadsheet->getActiveSheet()->getColumnDimension('F')->setAutoSize(true);
+					$spreadsheet->getActiveSheet()->getColumnDimension('G')->setAutoSize(true);
+					$spreadsheet->getActiveSheet()->getColumnDimension('H')->setAutoSize(true);
+					$spreadsheet->getActiveSheet()->getColumnDimension('I')->setAutoSize(true);
+			      	$nama_dosen = '';
+					$excel_row = 6;
+
+					foreach ($rekap as $row) {
+						if ($data['all'] == false) {
+							$spreadsheet->setActiveSheetIndex(0)
+							  ->setCellValue('A2', 'Nama Dosen : ')
+							  ->setCellValue('B2',  $row->nama_dosen )
+							  ->setCellValue('A'.$excel_row, $row->nama_prodi)
+							  ->setCellValue('B'.$excel_row, $row->semester)
+							  ->setCellValue('C'.$excel_row, $row->nama_matkul)
+							  ->setCellValue('D'.$excel_row, $row->nama_ruangan)
+							  ->setCellValue('E'.$excel_row, $row->sesi_kuliah)
+							  ->setCellValue('F'.$excel_row, $row->jumlah_sesi)
+							  ->setCellValue('G'.$excel_row, $row->tanggal);
+							$nama_dosen = $row->nama_dosen;
+						} else {
+							$spreadsheet->setActiveSheetIndex(0)
+							  ->setCellValue('A'.$excel_row,  $row->kode_dosen )
+							  ->setCellValue('B'.$excel_row,  $row->nama_dosen )
+							  ->setCellValue('C'.$excel_row, $row->nama_prodi)
+							  ->setCellValue('D'.$excel_row, $row->semester)
+							  ->setCellValue('E'.$excel_row, $row->nama_matkul)
+							  ->setCellValue('F'.$excel_row, $row->nama_ruangan)
+							  ->setCellValue('G'.$excel_row, $row->sesi_kuliah)
+							  ->setCellValue('H'.$excel_row, $row->jumlah_sesi)
+							  ->setCellValue('I'.$excel_row, $row->tanggal);
+							$nama_dosen = "ALL";
+						}
+						$excel_row++;
+					}
+				 $writer = new Xlsx($spreadsheet);
+				 $spreadsheet->getActiveSheet()->setTitle('Report Excel '.date('d-m-Y'));
+				 $spreadsheet->setActiveSheetIndex(0);
+				 $filename = 'Report Kehadiran -'.$nama_dosen.'- Periode -'.tgl_indo($tanggal).' sd '.tgl_indo($range).'-Generate date-'.date('d-m-Y');
+				 $path = FCPATH . 'downloads/reporting/'.$filename.'.xlsx';	
+				 $report = $writer->save($path);
+
+				$data['status'] = true;
+				$data['message'] ="data berhasil di generate";
+				$insert = [
+ 					'id_dosen' => $this->input->post('nama_dosen'),
+		 			'name' => $filename,
+		 			'periode_tgl' => $this->input->post('tanggal'),
+		 			'periode_range' => $this->input->post('range'),
+		 			'id_group' => $this->session->userdata('group')
+		 		];
+
+		 		if ($data['all'] == true) {
+		 			$insert = [
+		 				'status_all' => 1,
+		 				'id_dosen' => 16,
+			 			'name' => $filename,
+			 			'periode_tgl' => $this->input->post('tanggal'),
+			 			'periode_range' => $this->input->post('range'),
+			 			'id_group' => $this->session->userdata('group')
+		 			];
+		 		}
+
+		 		
+			 		if (is_file(base_url('downloads/reporting/'.$filename.'.xlsx'))) {
+				 		$insert_update = [
+				 			'date' => date('Y-m-d H:i:s')
+				 		];
+
+				 		$this->db->where('name', $filename);
+				 		$this->db->update('excel_reporting', $insert_update);
+			 		} else {
+			 			$this->db->where('name', $filename);
+			 			$report = $this->db->get('excel_reporting');
+			 			if ($report->num_rows() > 0) {
+			 				$insert_update = [
+					 			'date' => date('Y-m-d H:i:s')
+					 		];
+
+					 		$this->db->where('name', $filename);
+					 		$this->db->update('excel_reporting', $insert_update);
+			 			} else {
+			 				$this->db->set($insert);
+					 		$this->db->insert('excel_reporting');			 				
+			 			}
+						
+			 		}
+
+				} else {
+					$data['rekap'] = $rekap;	
+					$data['status'] = true;
+					$data['periode'] = tgl_indo($tanggal).' s/d '.tgl_indo($range);
+				}
+				
+			} else {
+				$data['status'] = false;
+				$data['message'] = "Data tidak ditemukan";
+			}	
+
+		} else {
+			$data['status'] = false;
+			$data['message'] = "tanggal awal tidak boleh lebih besar dari range";
+		}
+		return $this->response($data);	
+	}
+
+
+	public function show_agenda()
+	{
+		$this->load->model('M_RekapAg', '__db');
+		$post = $this->input->post(null, true);
+		$nama_prodi = $post['nama_prodi'];
+		$tanggal = date('Y-m-d', strtotime($this->input->post('tanggal')));
+		$range = date('Y-m-d', strtotime($this->input->post('range')));
+
+		if ($tanggal <= $range) {	
+
+			if ($this->input->post('nama_prodi')) {
+				$rekap = $this->__db->select('ci_agenda.id_agenda, ci_agenda.judul_kegiatan, ci_agenda.jenis_kegiatan, ci_agenda.kegiatan, ci_agenda.tanggal,  ci_agenda.jam_mulai, ci_agenda.jam_berakhir, ci_prodi.nama_prodi')
+				->join('ci_prodi', 'prodi_id', 'left')
+				->wheres('ci_agenda.tanggal >=', $this->input->post('tanggal'))
+				->wheres('ci_agenda.tanggal <=', $this->input->post('range'))
+				->wheres('ci_agenda.prodi_id', $this->input->post('nama_prodi'))
+				->get();
+				$data['all'] = false;
+			
+			} else {
+				$rekap = $this->__db->select('ci_agenda.id_agenda, ci_agenda.judul_kegiatan, ci_agenda.jenis_kegiatan, ci_agenda.kegiatan, ci_agenda.tanggal, ci_agenda.tanggal, ci_agenda.jam_mulai, ci_agenda.jam_berakhir, ci_prodi.nama_prodi')
+				->join('ci_prodi', 'prodi_id', 'left')
+				->wheres('ci_agenda.tanggal >=', $this->input->post('tanggal'))
+				->wheres('ci_agenda.tanggal <=', $this->input->post('range'))
+				->get();
+				$data['all'] = true;
+				
+
+
+			}
+
+
+			if ($rekap) {
+				if ($this->input->post('save_type') == 'generate') {
+					$spreadsheet = new Spreadsheet();
+	        		$sheet = $spreadsheet->getActiveSheet();
+					 $spreadsheet->getProperties()->setCreator('PPSUIKA - Jadwal')
+					->setLastModifiedBy('PPSUIKA - Jadwal')
+					->setTitle('Office 2007 XLSX Test Document')
+					->setSubject('Office 2007 XLSX Test Document')
+					->setDescription('Test document for Office 2007 XLSX, generated using PHP classes.')
+					->setKeywords('office 2007 openxml php')
+					->setCategory('Test result file');
+					if ($data['all'] == false) {
+						$data['status'] = true;
+			        	$data['message'] = "File berhasil di generate, Silahkan klik download pada button yg di sediakan";
+			        	$spreadsheet->setActiveSheetIndex(0)
+							->setCellValue('A1', 'REKAP AGENDA KEGIATAN SEKOLAH PASCASARJANA UNIVERSITAS IBN KHALDUN BOGOR')
+							->setCellValue('A3', 'Periode : ')
+							->setCellValue('B3',  $tanggal.' s/d '.$range )
+							->setCellValue('A5', 'Judul Kegiatan')
+							->setCellValue('B5', 'Jenis Kegiatan')
+							->setCellValue('C5', 'Detail')
+							->setCellValue('D5', 'Tanggal')
+							->setCellValue('E5', 'Jam Mulai')
+							->setCellValue('F5', 'Jam Selesai');
+
+					} else {
+						$spreadsheet->setActiveSheetIndex(0)
+							->setCellValue('A1', 'REKAP AGENDA KEGIATAN SEKOLAH PASCASARJANA UNIVERSITAS IBN KHALDUN BOGOR')
+							->setCellValue('A3', 'Periode : ')
+							->setCellValue('B3',  $tanggal.' s/d '.$range )
+							->setCellValue('A5', 'Program Studi')
+							->setCellValue('B5', 'Judul Kegiatan')
+							->setCellValue('C5', 'Jenis Kegiatan')
+							->setCellValue('D5', 'Detail')
+							->setCellValue('E5', 'Tanggal')
+							->setCellValue('F5', 'Jam Mulai')
+							->setCellValue('G5', 'Jam Selesai');
 					}
 
 					$styleTitle = [
@@ -422,41 +749,39 @@ class Rekap extends SI_Backend {
 					foreach ($rekap as $row) {
 						if ($data['all'] == false) {
 							$spreadsheet->setActiveSheetIndex(0)
-							  ->setCellValue('A2', 'Nama Dosen : ')
-							  ->setCellValue('B2',  $row->nama_dosen )
-							  ->setCellValue('A'.$excel_row, $row->nama_prodi)
-							  ->setCellValue('B'.$excel_row, $row->semester)
-							  ->setCellValue('C'.$excel_row, $row->nama_matkul)
-							  ->setCellValue('D'.$excel_row, $row->nama_ruangan)
-							  ->setCellValue('E'.$excel_row, $row->sesi_kuliah)
-							  ->setCellValue('F'.$excel_row, $row->jumlah_sesi)
-							  ->setCellValue('G'.$excel_row, $row->tanggal);
-							$nama_dosen = $row->nama_dosen;
+							  ->setCellValue('A2', 'Program Studi : ')
+							  ->setCellValue('B2',  $row->nama_prodi )
+							  ->setCellValue('A'.$excel_row, $row->judul_kegiatan)
+							  ->setCellValue('B'.$excel_row, $row->jenis_kegiatan)
+							  ->setCellValue('C'.$excel_row, $row->kegiatan)
+							  ->setCellValue('D'.$excel_row, $row->tanggal)
+							  ->setCellValue('E'.$excel_row, $row->jam_mulai)
+							  ->setCellValue('F'.$excel_row, $row->jam_berakhir);
+							$nama_prodi = $row->nama_prodi;
 						} else {
 							$spreadsheet->setActiveSheetIndex(0)
-							  ->setCellValue('A'.$excel_row,  $row->nama_dosen )
-							  ->setCellValue('B'.$excel_row, $row->nama_prodi)
-							  ->setCellValue('C'.$excel_row, $row->semester)
-							  ->setCellValue('D'.$excel_row, $row->nama_matkul)
-							  ->setCellValue('E'.$excel_row, $row->nama_ruangan)
-							  ->setCellValue('F'.$excel_row, $row->sesi_kuliah)
-							  ->setCellValue('G'.$excel_row, $row->jumlah_sesi)
-							  ->setCellValue('H'.$excel_row, $row->tanggal);
-							$nama_dosen = "ALL";
+							  ->setCellValue('A'.$excel_row,  $row->nama_prodi )
+							  ->setCellValue('B'.$excel_row, $row->judul_kegiatan)
+							  ->setCellValue('C'.$excel_row, $row->jenis_kegiatan)
+							  ->setCellValue('D'.$excel_row, $row->kegiatan)
+							  ->setCellValue('E'.$excel_row, $row->tanggal)
+							  ->setCellValue('F'.$excel_row, $row->jam_mulai)
+							  ->setCellValue('G'.$excel_row, $row->jam_berakhir);
+							$nama_prodi = "ALL";
 						}
 						$excel_row++;
 					}
 				 $writer = new Xlsx($spreadsheet);
 				 $spreadsheet->getActiveSheet()->setTitle('Report Excel '.date('d-m-Y'));
 				 $spreadsheet->setActiveSheetIndex(0);
-				 $filename = 'Report Kehadiran -'.$nama_dosen.'- Periode -'.tgl_indo($tanggal).' sd '.tgl_indo($range).'-Generate date-'.date('d-m-Y');
+				 $filename = 'Report Agenda Kegiatan -'.$nama_prodi.'- Periode -'.tgl_indo($tanggal).' sd '.tgl_indo($range).'-Generate date-'.date('d-m-Y');
 				 $path = FCPATH . 'downloads/reporting/'.$filename.'.xlsx';	
 				 $report = $writer->save($path);
 
 				$data['status'] = true;
 				$data['message'] ="data berhasil di generate";
 				$insert = [
- 					'id_dosen' => $this->input->post('nama_dosen'),
+ 					'id_prodi' => $this->input->post('nama_prodi'),
 		 			'name' => $filename,
 		 			'periode_tgl' => $this->input->post('tanggal'),
 		 			'periode_range' => $this->input->post('range'),
@@ -466,7 +791,7 @@ class Rekap extends SI_Backend {
 		 		if ($data['all'] == true) {
 		 			$insert = [
 		 				'status_all' => 1,
-		 				'id_dosen' => 16,
+		 				'id_prodi' => 8,
 			 			'name' => $filename,
 			 			'periode_tgl' => $this->input->post('tanggal'),
 			 			'periode_range' => $this->input->post('range'),
@@ -566,6 +891,13 @@ class Rekap extends SI_Backend {
 
 			return $this->output_json($this->export->datatables_data(), false);
 		//}
+	}
+
+	public function show_log_agenda()
+	{
+		$this->load->library('Datatables');
+		return $this->output_json($this->export->datatables_agenda(), false);
+		
 	}
 
 	public function output_json($data, $encode = true)

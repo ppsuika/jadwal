@@ -34,6 +34,25 @@ class M_Export extends SI_Model {
         $this->datatables->from('excel_reporting');
         $this->datatables->join('si_group', 'excel_reporting.id_group = si_group.group_id');
         $this->datatables->join('ci_dosen', 'ci_dosen.id = excel_reporting.id_dosen');
+        if ($this->session->userdata('group') != 6) {
+        	$this->db->where(['excel_reporting.id_group' => $this->session->userdata('group')]);
+        }
+        $this->db->order_by('excel_reporting.date', 'desc');
+        return $this->datatables->generate();
+	}
+
+
+	public function datatables_agenda()
+	{
+		$this->datatables->select('excel_reporting.id, excel_reporting.status_all, excel_reporting.name, excel_reporting.periode_tgl,excel_reporting.periode_range,excel_reporting.date,si_group.group, ci_prodi.nama_prodi');
+        $this->datatables->from('excel_reporting');
+        $this->datatables->join('si_group', 'excel_reporting.id_group = si_group.group_id');
+        //$this->datatables->join('ci_agenda', 'ci_agenda.prodi_id = excel_reporting.id_prodi');
+        $this->datatables->join('ci_prodi', 'ci_prodi.id = excel_reporting.id_prodi');
+
+        if ($this->session->userdata('group') != 6) {
+        	$this->db->where(['excel_reporting.id_group' => $this->session->userdata('group')]);
+        }
         $this->db->order_by('excel_reporting.date', 'desc');
         return $this->datatables->generate();
 	}

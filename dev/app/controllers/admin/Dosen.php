@@ -25,6 +25,7 @@ class Dosen extends SI_Backend {
 				$no++;
 				$row = array();
 				$row[] = $no;
+				$row[] = $r->kode_dosen;
 				$row[] = $r->nama_dosen;
 				$row[] = $r->kontak;
 				$row[] = $r->email;
@@ -100,6 +101,7 @@ class Dosen extends SI_Backend {
 				$data = [
 
 		       'nama_dosen' => $this->input->post('nama_dosen'),
+		       'kode_dosen' => $this->input->post('kode_dosen'),
 
 		       'email' => $this->input->post('email'),
 
@@ -114,7 +116,7 @@ class Dosen extends SI_Backend {
 				$data = [
 
 		       'nama_dosen' => $this->input->post('nama_dosen'),
-
+		       'kode_dosen' => $this->input->post('kode_dosen'),
 		       'email' => $this->input->post('email'),
 
 		       'kontak' => $this->input->post('kontak'),

@@ -6,10 +6,10 @@ class M_Dosen extends SI_Model {
 	protected $primary_key = 'id';
 
 	public $id = 'id';
-	var $column_order = array(null, 'nama_dosen','kontak', 'email', null);
-	var $column_search = array('nama_dosen','kontak', 'email'); 
+	var $column_order = array(null,'kode_dosen', 'nama_dosen','kontak', 'email', null);
+	var $column_search = array('kode_dosen','nama_dosen','kontak', 'email'); 
 	var $order = array('id' => 'desc'); // default order 
-	var $select = array('id','nama_dosen','kontak', 'email', 'nidn', 'avatar');
+	var $select = array('id','kode_dosen','nama_dosen','kontak', 'email', 'nidn', 'avatar');
 
 
 	public function __construct()

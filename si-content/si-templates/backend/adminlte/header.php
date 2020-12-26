@@ -105,11 +105,17 @@ scratch. This page gets rid of all links and provides the needed markup only.
 <!-- Fine Uploader jQuery JS file
 ====================================================================== -->
 <script src="<?= get_template_dir(dirname(__FILE__), 'include/fine-upload/jquery.fine-uploader.js')?>"></script>
+
+
 <script>
   var BASE_URL = '<?= base_url(); ?>';
   var BASE_ASSET = "<?= get_template_dir(dirname(__FILE__), 'include/')?>";
   var segment = '<?= $this->uri->segment(2) ?>';
   console.log(segment);
+function reload_ajax() {
+  table.ajax.reload(null, false);
+}
+
 
 </script>
 

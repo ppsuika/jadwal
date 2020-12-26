@@ -1,6 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class Jadwal extends SI_Backend {
+class Jadwal extends SI_Api {
 
 	public function __construct()
 	{
@@ -42,7 +42,7 @@ class Jadwal extends SI_Backend {
 
 	public function ajax()
 	{
-		if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest' ) {
+		// if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest' ) {
 			if (get_group('group_code') != 'ADM') {
 				$this->_db->jadwal_where(['ci_jadwal.group_id' => $this->session->userdata('group')]);	
 			}
@@ -58,7 +58,7 @@ class Jadwal extends SI_Backend {
 				$row[] = $r->nama_matkul;
 				$row[] = $r->nama_dosen;
 				$row[] = $r->nama_ruangan;
-				//$row[] = $r->sesi_kuliah;
+				$row[] = $r->sesi_kuliah;
 				$row[] = $r->tanggal;
 				//add html for action
 				$row[] = '
@@ -75,7 +75,7 @@ class Jadwal extends SI_Backend {
 			];
 
 			return $this->response($json_data);
-		}
+		//}
 			
 
 	}
@@ -106,7 +106,7 @@ class Jadwal extends SI_Backend {
     	'tanggal' => set_value('tanggal'),
 
     	'jml_mahasiswa' => set_value('jml_mahasiswa'),
-    	//'sesi_kuliah' => set_value('sesi_kuliah'),
+    	'sesi_kuliah' => set_value('sesi_kuliah'),
 
     	);
 		$this->site->load('jadwal/form_jadwal', $data);
@@ -147,7 +147,7 @@ class Jadwal extends SI_Backend {
 		        'kode_ruangan' => $this->input->post('nama_ruangan'),
 		        'jml_mahasiswa' => $this->input->post('jml_mahasiswa'),
 		        'group_id' => $this->session->userdata('group'),
-		        //'sesi_kuliah' => $this->input->post('sesi_kuliah'),
+		        'sesi_kuliah' => $this->input->post('sesi_kuliah'),
 		       ];
 
 		       
@@ -227,7 +227,7 @@ class Jadwal extends SI_Backend {
 		        'kode_ruangan' => $this->input->post('nama_ruangan'),
 		        'jml_mahasiswa' => $this->input->post('jml_mahasiswa'),
 		        'group_id' => $this->session->userdata('group'),
-		        //'sesi_kuliah' => $this->input->post('sesi_kuliah'),
+		        'sesi_kuliah' => $this->input->post('sesi_kuliah'),
 		       ];
 
 			$save_data = $this->_db->insert($data);

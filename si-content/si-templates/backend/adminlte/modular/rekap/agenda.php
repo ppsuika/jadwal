@@ -2,13 +2,13 @@
 <!-- Content Header (Page header) -->
 <section class="content-header">
    <h1>
-      Manajemen Jadwal
+      Manajemen Agenda
     
       <small></small>
    </h1>
    <ol class="breadcrumb">
       <li><a href="#"><i class="fa fa-dashboard"></i> Dashboard</a></li>
-      <li class="active">Manajemen jadwal</li>
+      <li class="active">Manajemen Agenda</li>
    </ol>
 </section>
 <!-- Main content -->
@@ -32,7 +32,7 @@
                         <img class="img-circle" src="<?= BASE_ASSET.'include/img/list.png'; ?>" alt="User Avatar">
                      </div>
                      <!-- /.widget-user-image -->
-                     <h3 class="widget-user-username">Rekap Jadwal</h3>
+                     <h3 class="widget-user-username">Rekap Agenda</h3>
                      <h5 class="widget-user-desc"> </h5>
                   </div>
 
@@ -51,13 +51,13 @@
                       
                       <div class="form-group ">
 
-                        <label for="username" class="col-sm-2 control-label">Nama Dosen<i class="required"></i></label>
+                        <label for="username" class="col-sm-2 control-label">Program Studi<i class="required"></i></label>
 
 
 
                         <div class="col-sm-8">
 
-                          <?php echo cmb_dinamis('nama_dosen','ci_dosen','nama_dosen','id',$nama_dosen, 'select2'); ?>
+                          <?php echo cmb_dinamis('nama_prodi','ci_prodi','nama_prodi','id',$nama_prodi, 'select2'); ?>
 
                           
 
@@ -131,7 +131,8 @@
            <th>
             #
            </th>
-           <th >Nama Dosen</th>
+           <th >Program Studi</th>
+           <!-- <th >Agenda title</th> -->
            <th >Nama file</th>
            <th>Periode</th>
            <th>Tanggal Generate</th>
@@ -186,7 +187,7 @@ $(document).ready(function(){
     processing: true,
     serverSide: true,
     ajax: {
-      url: BASE_URL + "admin/rekap/show_log",
+      url: BASE_URL + "admin/rekap/show_log_agenda",
       type: "POST"
       //data: csrf
     },
@@ -196,7 +197,8 @@ $(document).ready(function(){
         orderable: false,
         searchable: false
       },
-      { data: "nama_dosen" },
+      { data: "nama_prodi" },
+      //{ data: "judul_kegiatan" },
       { data: "name" },
       { data: {
           tanggal: "periode_tgl",
@@ -272,7 +274,7 @@ $(document).ready(function(){
 
     $('#btn_save').click(function(event) {
           
-          var url = '<?= base_url('admin/rekap/show'); ?>';
+          var url = '<?= base_url('admin/rekap/show_agenda'); ?>';
           var save_type = 'back';
           var form = $('#form')[0];
           var form_data = new FormData(form);
@@ -305,14 +307,13 @@ $(document).ready(function(){
                   no++;
                    rekap += '<tr>';
                    rekap += '<td>'+no+'</td>';
-                   rekap += '<td>'+val.nama_dosen+'</td>';
-                   rekap += '<td>'+val.nama_prodi+'</td>';
-                   rekap += '<td>'+val.semester+'</td>';
-                   rekap += '<td>'+val.nama_matkul+'</td>';
-                   rekap += '<td>'+val.nama_ruangan+'</td>';
-                   rekap += '<td>'+val.sesi_kuliah+'</td>';
-                   rekap += '<td>'+val.jumlah_sesi+'</td>';
+                    rekap += '<td>'+val.nama_prodi+'</td>';
+                   rekap += '<td>'+val.judul_kegiatan+'</td>';
+                   rekap += '<td>'+val.jenis_kegiatan+'</td>';
+                   rekap += '<td>'+val.kegiatan+'</td>';
                    rekap += '<td>'+val.tanggal+'</td>';
+                   rekap += '<td>'+val.jam_mulai+'</td>';
+                   rekap += '<td>'+val.jam_berakhir+'</td>';
                    $('.nama_dosen').text(val.nama_dosen);
 
                 });
@@ -329,14 +330,13 @@ $(document).ready(function(){
                   no++;
                    rekap += '<tr>';
                    rekap += '<td>'+no+'</td>';
-                   rekap += '<td>'+val.nama_prodi+'</td>';
-                   rekap += '<td>'+val.semester+'</td>';
-                   rekap += '<td>'+val.nama_matkul+'</td>';
-                   rekap += '<td>'+val.nama_ruangan+'</td>';
-                   rekap += '<td>'+val.sesi_kuliah+'</td>';
-                   rekap += '<td>'+val.jumlah_sesi+'</td>';
+                   rekap += '<td>'+val.judul_kegiatan+'</td>';
+                   rekap += '<td>'+val.jenis_kegiatan+'</td>';
+                   rekap += '<td>'+val.kegiatan+'</td>';
                    rekap += '<td>'+val.tanggal+'</td>';
-                   $('.nama_dosen').text(val.nama_dosen);
+                   rekap += '<td>'+val.jam_mulai+'</td>';
+                   rekap += '<td>'+val.jam_berakhir+'</td>';
+                   $('.nama_dosen').text(val.nama_prodi);
 
                 });  
               }
@@ -365,7 +365,7 @@ $(document).ready(function(){
       fm.append('save_type', 'generate');
 
         $.ajax({
-          url: '<?= base_url('admin/rekap/show') ?>',
+          url: '<?= base_url('admin/rekap/show_agenda') ?>',
           type: 'POST',
           dataType: 'JSON',
           data: fm,
@@ -441,14 +441,14 @@ $(document).ready(function(){
 
                 </div>
                 <span class="loading loading-hide"><img src="<?= base_url('assets'); ?>/img/loading-spin-primary.svg"> <i>Loading, Generate data ... </i></span>
-                <button type="submit" class="btn btn-flat btn-info  rekap" id="rekap_btn" data-stype='stay' title="save (Ctrl+s)"><i class="fa fa-save" ></i> Generate Data to Excel</button>
-                <button type="button" data-dismiss="modal" class="btn btn-flat btn-default cancel-rekap" id="btn_cancel" title="cancel (Ctrl+x)"><i class="fa fa-undo" ></i> Cancel</button>
+                <button type="submit" class="btn btn-flat btn-info  rekap" id="rekap_btn" data-stype='stay' title="save (Ctrl+s)" ><i class="fa fa-save" ></i> Generate Data to Excel</button>
+                <button type="button" data-dismiss="modal" class="btn btn-flat btn-default cancel-rekap" id="btn_cancel" title="cancel (Ctrl+x)" ><i class="fa fa-undo" ></i> Cancel</button>
             </div>
                 <div class="table-responsive"> 
                   <table id="log-generate" class="table table-bordered table-striped dataTable">
                    
                     <tr class="tr_dosen">
-                      <td>Nama Dosen </td>
+                      <td>Program Studi </td>
                       <td><span class="nama_dosen">Muhammad Asrul anwar</span></td>
                     </tr>
 
@@ -468,14 +468,13 @@ $(document).ready(function(){
                                <th>
                                 #
                                </th>
-                               <th class="nama_dosen_header" style="display:none">Nama Dosen</th>
-                               <th>Program Studi</th>
-                               <th>Smt</th>
-                               <th>Matakuliah</th>
-                               <th>Ruangan</th>
-                               <th>Sesi Wajib</th>
-                               <th>Sesi Hadir</th>
+                               <th class="nama_dosen_header" style="display:none">Program Studi</th>
+                               <th>Judul Kegiatan</th>
+                               <th>Jenis Kegiatan</th>
+                               <th>Kegiatan Detail</th>
                                <th>Tanggal</th>
+                               <th>Jam Mulai</th>
+                               <th>Jam Berakhir</th>
                             </tr>
                             </thead>
                             <tbody id="tbody_content">

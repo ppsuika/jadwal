@@ -59,7 +59,7 @@
                            <th width="120px">Matakuliah</th>
                            <th width="130px">Dosen</th>
                            <th width="100px">Ruangan</th>
-                           <th>Jml Wajib sesi Kuliah</th>
+                           <!-- <th>Jml Wajib sesi Kuliah</th> -->
                            <th>Tanggal</th>
                            <th>Action</th>
                         </tr>
@@ -171,7 +171,7 @@
 
 
 
-                    <div class="form-group ">
+                    <!-- <div class="form-group ">
 
                         <label for="fullname" class="col-sm-2 control-label">Dosen Pengganti<i class="required"></i></label>
 
@@ -185,7 +185,7 @@
 
                         </div>
 
-                    </div>
+                    </div> -->
 
 
 
@@ -294,23 +294,7 @@
 
                     </div>
 
-                    <div class="form-group ">
-
-                        <label for="text" class="col-sm-2 control-label">Sesi Kuliah <i class="required"></i></label>
-
-
-
-                        <div class="col-sm-8">
-
-                          <input type="number" class="form-control" name="sesi_kuliah" id="sesi_kuliah" placeholder="Sesi Kuliah" value="<?= $sesi_kuliah; ?>">
-
-                          <small class="info help-block">
-                            1 atau 2 ... ?
-                          </small>
-
-                        </div>
-
-                    </div>
+                    
                     
                     
 
@@ -334,21 +318,21 @@
 <script type="text/javascript">
 $(document).ready(function(){
 
- $('.timepicker').datetimepicker({
+ // $('.timepicker').datetimepicker({
 
-           format: 'HH:mm'
+ //           format: 'HH:mm'
 
-          });
+ //  });
 
             //Date picker
 
-    $('.datepicker').datepicker({
+    // $('.datepicker').datepicker({
 
-      autoclose: true,
+    //   autoclose: true,
 
-      format: 'yyyy/mm/dd'
+    //   format: 'yyyy/mm/dd'
 
-    });
+    // });
   table = $('.dataTable').DataTable({ 
 
         "processing": true, //Feature control the processing indicator.
@@ -511,7 +495,7 @@ $(document).ready(function(){
                 $('[name=jam_berakhir]').val(res.message.jam_berakhir);
                 $('[name=tanggal]').val(res.message.tanggal);
                 $('[name=jml_mahasiswa]').val(res.message.jml_mahasiswa);
-                $('[name=sesi_kuliah]').val(res.message.sesi_kuliah);
+               // $('[name=sesi_kuliah]').val(res.message.sesi_kuliah);
 
 
 

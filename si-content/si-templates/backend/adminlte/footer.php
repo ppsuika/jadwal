@@ -78,7 +78,18 @@
       }
     })
   })
+$('.timepicker').datetimepicker({
 
+   format: 'HH:mm'
+
+  });
+ $('.datepicker').datepicker({
+
+      autoclose: true,
+
+      format: 'yyyy/mm/dd'
+
+    });
 $(document).ready(function() {
   $selectElement = $('.select2').select2({
     placeholder: "Please select an Option",

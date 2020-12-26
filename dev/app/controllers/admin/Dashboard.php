@@ -36,28 +36,104 @@ class Dashboard extends SI_Backend {
 	{
 		$jadwals = $this->_db->get_jadwal(['ci_jadwal.id' => $id]);
 		
-		$sesi_old = $this->_db->sesi_kehadiran(['ci_kehadiran_dosen.id_jadwal' => $id]);
+		$sesi_old = $this->_db->get_jadwal_(['ci_jadwal.id' => $id]);
 		foreach ($jadwals as $jadwal) {
 			$data['jadwal'] = $jadwal;
 		}
 		$data['sesi_old'] = $sesi_old;
+		
+
 
 
 		$this->load->view($this->view_table.'/jadwal/show', $data);
 	}
 
+
+
+
+	public function getJadwal($tanggal = null, $range = null, $periode= null)
+	{
+		
+
+		$this->load->library('datatables');
+		
+		$this->output_json($this->_db->datatables_data($tanggal, $range, $periode), false);
+	}
+
+	public function output_json($data, $encode = true)
+    {
+        if ($encode) $data = json_encode($data);
+        $this->output->set_content_type('application/json')->set_output($data);
+    }
+
 	public function detail($id)
 	{
 		$jadwals = $this->_db->get_jadwal(['ci_jadwal.id' => $id]);
 
-		$sesi_old = $this->_db->sesi_kehadiran(['ci_kehadiran_dosen.id_jadwal' => $id]);
+		$sesi_old = $this->_db->get_jadwal(['ci_jadwal.id' => $id]);
 		foreach ($jadwals as $jadwal) {
 			$data['jadwal'] = $jadwal;
 		}
-		$data['sesi_old'] = $sesi_old;
 
+		foreach ($sesi_old as $rw) {
+			$data['sesi_old'] = $rw;
+		}
+		
 
 		$this->load->view($this->view_table.'/jadwal/detail', $data);
+	}
+
+	public function zoom($id)
+	{
+		$jadwals = $this->_db->get_jadwal(['ci_jadwal.id' => $id]);
+
+		$sesi_old = $this->_db->get_jadwal(['ci_jadwal.id' => $id]);
+		foreach ($jadwals as $jadwal) {
+			$data['jadwal'] = $jadwal;
+		}
+
+		foreach ($sesi_old as $rw) {
+			$data['sesi_old'] = $rw;
+		}
+		
+
+		$this->load->view($this->view_table.'/jadwal/zoom', $data);
+	}
+
+	public function save_url()
+	{
+		$id = $this->input->post('id', TRUE);
+		$post = $this->input->post(null, true);
+		$url = $post['rekaman'];
+		$update = ['url_video' => $url];
+		$update_save = $this->_db->update($update, ['id' => $id], 'ci_jadwal');
+		if ($update_save) {
+			$response['success'] = true; 
+			$response['message'] = "berhasil mengupdate data"; 
+		} else {
+			$response['success'] = false; 
+			$response['message'] = "gagal mengupdate data"; 
+		}
+		$this->response($response);
+	}
+
+
+	public function save_jam()
+	{
+		$id = $this->input->post('form_kehadiran_id', TRUE);
+		$post = $this->input->post(null, true);
+		$jam_masuk = $post['jam_mulai'];
+		$jam_keluar = $post['jam_berakhir'];
+		$update = ['jam_masuk' => $jam_masuk, 'jam_keluar' => $jam_keluar];
+		$update_save = $this->_db->update($update, ['id' => $id], 'ci_jadwal');
+		if ($update_save) {
+			$response['success'] = true; 
+			$response['message'] = "berhasil mengupdate data"; 
+		} else {
+			$response['success'] = false; 
+			$response['message'] = "gagal mengupdate data"; 
+		}
+		$this->response($response);
 	}
 
 

@@ -47,6 +47,7 @@
                            <th>
                             #
                            </th>
+                           <th>ID</th>
                            <th>Nama Dosen</th>
                            <th>Kontak</th>
                            <th>Email</th>
@@ -88,6 +89,21 @@
 
                   ?>
                   <input type="hidden" name="id">
+                  <div class="form-group ">
+
+                        <label for="username" class="col-sm-2 control-label">ID Dosen<i class="required"></i></label>
+
+
+
+                        <div class="col-sm-8">
+
+                          <input type="text" class="form-control" name="kode_dosen" id="kode_dosen" placeholder="ID Dosen" value="">
+
+                          <small class="info help-block"></small>
+
+                        </div>
+
+                    </div>
                   <div class="form-group ">
 
                         <label for="username" class="col-sm-2 control-label">Nama Dosen <i class="required"></i></label>
@@ -347,6 +363,7 @@ $(document).ready(function(){
         .done(function(res){
             if (res.success) {
                 $('[name=id]').val(res.message.id);
+                $('[name=kode_dosen]').val(res.message.kode_dosen);
                 $('[name=nama_dosen]').val(res.message.nama_dosen);
                 $('[name=nidn]').val(res.message.nidn);
                 $('[name=kontak]').val(res.message.kontak);

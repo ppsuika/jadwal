@@ -117,7 +117,7 @@
 
 
 
-                    <div class="form-group ">
+                   <!--  <div class="form-group ">
 
                         <label for="fullname" class="col-sm-2 control-label">Dosen Pengganti<i class="required"></i></label>
 
@@ -125,13 +125,13 @@
 
                         <div class="col-sm-8">
 
-                          <?php echo cmb_dinamis('dosen_pengganti','ci_dosen','nama_dosen','id', $dosen_pengganti, 'select2'); ?>
+                          <?php  cmb_dinamis('dosen_pengganti','ci_dosen','nama_dosen','id', $dosen_pengganti, 'select2'); ?>
 
                          
 
                         </div>
 
-                    </div>
+                    </div> -->
 
 
 
@@ -239,23 +239,7 @@
                         </div>
                     </div>
 
-                    <div class="form-group ">
-
-                        <label for="text" class="col-sm-2 control-label">Jml wajib Sesi Kuliah <i class="required"></i></label>
-
-
-
-                        <div class="col-sm-8">
-
-                          <input type="number" class="form-control" name="sesi_kuliah" id="sesi_kuliah" placeholder="Sesi Kuliah" value="<?= $sesi_kuliah; ?>">
-
-                          <small class="info help-block">
-                            1 atau 2 ... ?
-                          </small>
-
-                        </div>
-
-                    </div>
+                    
 
                     
                     <div class="message">
@@ -290,21 +274,21 @@
 <script>
   $(document).ready(function() {
 
-    $('.timepicker').datetimepicker({
+    // $('.timepicker').datetimepicker({
 
-           format: 'HH:mm'
+    //        format: 'HH:mm'
 
-          });
+    //       });
 
             //Date picker
 
-    $('#datepicker').datepicker({
+    // $('#datepicker').datepicker({
 
-      autoclose: true,
+    //   autoclose: true,
 
-      format: 'yyyy/mm/dd'
+    //   format: 'yyyy/mm/dd'
 
-    });
+    // });
 
 
     $('#btn_cancel').click(function() {

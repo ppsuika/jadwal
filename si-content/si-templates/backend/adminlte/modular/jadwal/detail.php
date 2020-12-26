@@ -26,15 +26,16 @@
 	</tr>
 
 	<tr>
-		<th>Sesi Kewajiban</th>
-		<td> <span class="badge badge-info"><?= $jadwal->sesi_kuliah ?></span> </td>
-	</tr>
+				<th>Jam Masuk & Keluar</th>
+				<td> <span class="badge badge-pill bg-green">Jam Masuk :  <?= $jadwal->jam_masuk ?> | Keluar  : <?= $jadwal->jam_keluar ?></span> </td>
+			</tr>
+
+
 
 	<tr>
-		<th>Sesi Kehadiran hari ini</th>
+		<th>Url / Link Rekaman</th>
 		<td> 
-			<span class="badge badge-success"><?= $sesi_old->jumlah_sesi ?>
-			</span>
+			<a href="<?= $jadwal->url_video ?>" target="_blank">Rekaman Mengajar - <?= $jadwal->nama_matkul ?> - <?= $jadwal->nama_dosen ?> - <?= $jadwal->nama_prodi ?> - <?= tgl_indo($jadwal->tanggal) ?> </a>
 		 </td>
 	</tr>
 </table>

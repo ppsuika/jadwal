@@ -68,7 +68,7 @@ class SI_Model extends CI_Model {
 
 	}
 
-	public function get($id=NUll, $single=FALSE)
+	public function get($id=NUll, $single=FALSE, $table = NULL)
 	{
 		if ($id != NUll) {
 			$filter = $this->primary_filter;
@@ -87,7 +87,12 @@ class SI_Model extends CI_Model {
 			$this->db->order_by($this->order_by);
 		}
 
-		return $this->db->get($this->table_name)->$method();
+		if ($table != NULL) {
+			return $this->db->get($table)->$method;
+		} else {
+			return $this->db->get($this->table_name)->$method();
+
+		}
 	}
 
 	public function result_array()

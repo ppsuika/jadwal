@@ -17,6 +17,22 @@ function cmb_dinamis($name,$table,$field,$pk,$selected, $type = false){
     return $cmb;  
 }
 
+function option_cmb($table){
+    $ci = get_instance();
+    $cmb = "";
+    $data = $ci->db->get($table)->result();
+
+   
+    foreach ($data as $d){
+
+        $cmb .="<option value='".$d->id."'";
+        $cmb .= $selected==$d->id?" selected='selected'":'';
+        $cmb .=">".  strtoupper($d->keterangan)."</option>";
+    }
+    $cmb .="";
+    return $cmb;  
+}
+
 function get_group($name)
 {
     $ci = get_instance();

@@ -9,7 +9,7 @@ class M_Jadwal extends SI_Model {
 	var $column_order = array(null, 'nama_prodi','nama_matkul', 'nama_dosen','nama_ruangan','sesi_kuliah','tanggal', null);
 	var $column_search = array('ci_prodi.nama_prodi','ci_matkul.nama_matkul', 'ci_dosen.nama_dosen', 'ci_jadwal.tanggal'); 
 	var $order = array('id' => 'desc'); // default order 
-	var $select = array('ci_jadwal.id','ci_prodi.nama_prodi','ci_jadwal.semester','ci_matkul.nama_matkul','ci_dosen.nama_dosen','ci_jadwal.dosen_pengganti','ci_ruangan.nama_ruangan','ci_ruangan.gedung','ci_jadwal.jml_mahasiswa','ci_jadwal.jam_mulai','ci_jadwal.jam_berakhir','ci_jadwal.tanggal','si_group.group', 'ci_jadwal.group_id', 'ci_jadwal.sesi_kuliah');
+	var $select = array('ci_jadwal.id','ci_prodi.nama_prodi','ci_jadwal.semester','ci_matkul.nama_matkul','ci_dosen.nama_dosen','ci_jadwal.dosen_pengganti','ci_ruangan.nama_ruangan','ci_ruangan.gedung','ci_jadwal.jml_mahasiswa','ci_jadwal.jam_mulai','ci_jadwal.jam_berakhir','ci_jadwal.tanggal','si_group.group', 'ci_jadwal.group_id', 'ci_jadwal.jam_masuk', 'ci_jadwal.jam_keluar',  'ci_jadwal.url_video');
 	var $join = array(
 		'ci_prodi' => 'ci_prodi.id = ci_jadwal.nama_prodi',
 		'ci_matkul' => 'ci_matkul.id = ci_jadwal.nama_matkul',
@@ -32,6 +32,47 @@ class M_Jadwal extends SI_Model {
 		$this->where = $where;
 	}
 
+	public function datatables_data($tanggal = null, $range = null, $periode=null)
+	{
+		$select_dat = implode(', ', $this->select);
+		$this->datatables->select($select_dat);
+        $this->datatables->from($this->table_name);
+        $this->datatables->join('ci_prodi', 'ci_prodi.id = ci_jadwal.nama_prodi');
+        $this->datatables->join('ci_matkul', 'ci_matkul.id = ci_jadwal.nama_matkul');
+        $this->datatables->join('ci_dosen', 'ci_dosen.id = ci_jadwal.nama_dosen');
+        $this->datatables->join('ci_ruangan', 'ci_ruangan.id = ci_jadwal.kode_ruangan');
+        $this->datatables->join('si_group', 'si_group.group_id = ci_jadwal.group_id');
+        //$this->datatables->join('si_periode', 'si_periode.id = ci_jadwal.id_periode');
+        $this->db->order_by('ci_jadwal.id', 'desc');
+        $this->db->order_by('ci_jadwal.jam_mulai', 'ASC');
+        if ($this->session->userdata('group') != 6) {
+        	$this->db->where(['ci_jadwal.group_id' => $this->session->userdata('group')]);
+        }
+        
+        
+        if ($tanggal != null && $range != null && $periode != null) {
+			$this->db->where('ci_jadwal.tanggal >=', $tanggal );
+			$this->db->where('ci_jadwal.tanggal <=', $range );
+			$this->db->where('ci_jadwal.id_periode', $periode );
+        } else if ($tanggal != null && $range == null && $periode == null) {
+        	$this->db->where('ci_jadwal.tanggal', $tanggal );
+        } else if ($range != null && $tanggal == null && $periode == null) {
+        	$this->db->where('ci_jadwal.tanggal', $range );
+        } else if ($periode != null && $tanggal == null && $range == null) {
+        	$this->db->where('ci_jadwal.id_periode', $periode );
+        } else if ($tanggal != null && $range != null ) {
+			$this->db->where('ci_jadwal.tanggal >=', $tanggal );
+			$this->db->where('ci_jadwal.tanggal <=', $range );
+		} else if ($tanggal != null && $range == null ) {
+        	$this->db->where('ci_jadwal.tanggal', $tanggal );
+        } else if ($range != null && $tanggal == null ) {
+        	$this->db->where('ci_jadwal.tanggal', $range );
+        } else {
+        	$this->db->where(['tanggal' => date('Y-m-d')]);
+        }
+        return $this->datatables->generate();
+	}
+
 
 	public function get_jadwal($where = NUll)
 	{
@@ -44,6 +85,19 @@ class M_Jadwal extends SI_Model {
         $this->db->order_by('jam_mulai', 'ASC');
         $query = $this->db->get();  
         return $query->result();  
+	}
+
+	public function get_jadwal_($where = NUll)
+	{
+		$select_dat = implode(', ', $this->select);
+		$this->db->select($select_dat);
+        $this->db->from($this->table_name);
+        //$this->db->join('role', 'ar_users.role = role.id', 'left');
+        $this->getJoin();
+        $this->db->where($where);
+        $this->db->order_by('jam_mulai', 'ASC');
+        $query = $this->db->get();  
+        return $query->row();  
 	}
 
 	public function sesi_kehadiran($where = null)
